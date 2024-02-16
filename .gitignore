@@ -1,0 +1,40 @@
+# Operating system files
+**/__pycache__/**
+.DS_Store
+Thumbs.db
+
+# IDE/Editor files
+*.suo
+*.sublime-project
+*.sublime-workspace
+*.vscode
+*.idea
+*.iml
+
+# Generated files
+build/
+dist/
+data/
+.cache/
+node_modules/
+vendor/
+package-lock.json
+npm-debug.log
+yarn.lock
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+*.tmp
+*.swp
+
+# Testing files
+coverage/
