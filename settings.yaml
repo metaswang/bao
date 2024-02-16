@@ -1,0 +1,11 @@
+INDEX:
+  CHUNK_SIZE: 500
+  CHUNK_OVERLAP: 50
+RETRIEVER_VECT:
+  K: 10
+  SCORE_THRESHOLD: 0.83
+RERANKER:
+  K: 4
+
+EMBEDDING:
+  MODEL: intfloat/multilingual-e5-base

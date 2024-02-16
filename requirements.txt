@@ -1,0 +1,14 @@
+google-generativeai
+openai==1.11.1
+langchain==0.1.7
+langchain-community==0.0.17
+yacs==0.1.8
+python-dotenv
+discord.py
+responses
+tqdm
+cohere
+lru_cache
+transformers
+pytorch
+qdrant-client
