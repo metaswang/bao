@@ -1,13 +1,13 @@
+import logging
+from itertools import chain as iter_chain
 from typing import Iterable, List, Tuple, Union
+
 from injector import inject, singleton
 from pydantic import BaseModel, Field
-from langchain_core.documents import Document
 
 from bao.components.chains.chat_chain import ChatChains
 from bao.utils.chat_template import gen_refence
 from bao.utils.strings import get_metadata_alias, seconds_to_hh_mm_ss
-import logging
-from itertools import chain as iter_chain
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +34,7 @@ class Chat:
         self.max_history_len = self.settings.web.max_history_len
         self.show_all_quotes = show_all_quotes
 
-    def render_video_clip(
-        self, title: str, video_url: str, start_at: Iterable[int]
-    ) -> str:
+    def render_video_clip(self, video_url: str, start_at: int) -> str:
         """
         Render the youtube video clip link with short format when given playing start time
         """

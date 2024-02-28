@@ -17,7 +17,9 @@ crawler:
   output_dir: data/youtube_lessons
   whisper_model: small
   transcript_merge_size: 300
-
+  youtube_short_url_domain: "https://youtu.be"  
+  youtube_url_domain: "https://www.youtube.com"
+  
 injest:
   chunk_size: 500
   chunk_overlap: 50
