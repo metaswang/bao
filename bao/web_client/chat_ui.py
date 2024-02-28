@@ -8,7 +8,7 @@ from injector import inject, singleton
 
 from bao import PROJECT_ROOT_PATH
 from bao.settings.settings import Settings
-from bao.web_client.chat import Chat, ChatRequestBody, ChatResponse
+from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 from bao.settings.settings import settings
 
 logger = logging.getLogger(__name__)
