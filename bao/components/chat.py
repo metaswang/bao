@@ -1,13 +1,13 @@
-from typing import Iterable, List, Tuple, Union
-from injector import inject, singleton
-from pydantic import BaseModel, Field
-from langchain_core.documents import Document
-
-from bao.components.chains.chat_chain import ChatChains
-from bao.utils.chat_template import gen_refence
-from bao.utils.strings import get_metadata_alias, seconds_to_hh_mm_ss
 import logging
 from itertools import chain as iter_chain
+from typing import Iterable, List, Tuple, Union
+
+from injector import inject, singleton
+from pydantic import BaseModel, Field
+
+from bao.components.chains.chat_chain import ChatChains
+from bao.utils.chat_template import RENDER_YOUTUBE_CLIP_FN, SHOW_ALL_QUOTES, gen_refence
+from bao.utils.strings import get_metadata_alias, seconds_to_hh_mm_ss
 
 logger = logging.getLogger(__name__)
 
@@ -82,8 +82,8 @@ class Chat:
                 for alias in get_metadata_alias(doc_metadata_fields)
             },
         )
-        context["show_all_quotes"] = self.show_all_quotes
-        context["fn_render_video_clip"] = self.render_video_clip
+        context[SHOW_ALL_QUOTES] = self.show_all_quotes
+        context[RENDER_YOUTUBE_CLIP_FN] = self.render_video_clip
         if search:
             if not answer.get("input_documents"):
                 return ChatResponse(

@@ -1,11 +1,12 @@
 from collections import defaultdict
-from typing import List, Any, Dict
+from typing import Any, Dict, List
 
 from langchain_core.documents import Document
 
 from bao.utils.strings import seconds_to_hh_mm_ss
 
 RENDER_YOUTUBE_CLIP_FN = "fn_render_video_clip"
+SHOW_ALL_QUOTES = "show_all_quotes"
 
 
 def gen_refence(
