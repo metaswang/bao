@@ -21,6 +21,12 @@ class Crawler(BaseModel):
         300,
         description="The expected chunk size after merged some neighbor transcript segments",
     )
+    youtube_short_url_domain: str = Field(
+        "https://youtu.be", description="Youtube short domain"
+    )
+    youtube_url_domain: str = Field(
+        "https://www.youtube.com", description="Youtube url domain"
+    )
 
 
 class LLMSettings(BaseModel):

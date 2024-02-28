@@ -41,8 +41,8 @@ class TranscriptService:
             )
         video_id = (
             video_url.split("v=")[-1].split("&")[0]
-            if not video_url.startswith("https://youtu.be")
-            else video_url.split("/")[-1]  # when short url
+            if not video_url.startswith(self.settings.crawler.youtube_short_url_domain)
+            else video_url.split("/")[-1].split("?")[0]  # when short url
         )
         try:
             transcript = YouTubeTranscriptApi.get_transcript(
