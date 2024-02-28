@@ -73,7 +73,7 @@ web:
   btn_submit: "Submit"
   work_mode_label: ""
   work_modes: "Mode"
-   - "Question"
+   - "Ask Question"
    - "Search"
 
 discord:
