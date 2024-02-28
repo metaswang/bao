@@ -1,4 +1,3 @@
-from copy import deepcopy
 import logging
 from pathlib import Path
 from typing import List
@@ -10,14 +9,14 @@ from injector import inject, singleton
 from bao import PROJECT_ROOT_PATH
 from bao.settings.settings import Settings
 from bao.web_client.chat import Chat, ChatRequestBody, ChatResponse
-
+from bao.settings.settings import settings
 
 logger = logging.getLogger(__name__)
 
 RELATIVE_PATH = Path(__file__).parent.relative_to(PROJECT_ROOT_PATH)
 
 
-DEFAULT_CHAT_MODE_ASK, DEFAULT_CHAT_MODE_SEARCH = "问答", "搜索"
+DEFAULT_CHAT_MODE_ASK, DEFAULT_CHAT_MODE_SEARCH = settings().web.work_modes
 DEFAULT_CHAT_MODE = [DEFAULT_CHAT_MODE_ASK, DEFAULT_CHAT_MODE_SEARCH]
 
 
@@ -73,7 +72,7 @@ class ChatUI:
                 with gr.Column(scale=10):
                     mode = gr.Radio(
                         DEFAULT_CHAT_MODE,  # type: ignore
-                        label="模式",
+                        label=self.settings.web.work_mode_label,
                         value=DEFAULT_CHAT_MODE_SEARCH,
                     )
             with gr.Row(equal_height=False):
@@ -91,9 +90,9 @@ class ChatUI:
                             render_markdown=True,
                         ),
                         retry_btn=None,
-                        undo_btn="↩️ 删除上一条",
-                        clear_btn="🗑️  清空",
-                        submit_btn="提交",
+                        undo_btn=self.settings.web.btn_undo,
+                        clear_btn=self.settings.web.btn_clear,
+                        submit_btn=self.settings.web.btn_submit,
                         additional_inputs=[mode],
                     )
             return blocks

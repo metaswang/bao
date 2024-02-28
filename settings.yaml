@@ -68,6 +68,13 @@ web:
    - "Question 1"
    - "Question 2"
    - "Question 3"
+  btn_undo: "Delete Previous"
+  btn_clear: "Clear"
+  btn_submit: "Submit"
+  work_mode_label: ""
+  work_modes: "Mode"
+   - "Question"
+   - "Search"
 
 discord:
   discord_token: ${DISCORD_TOKEN}
