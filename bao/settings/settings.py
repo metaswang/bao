@@ -178,6 +178,15 @@ class WebUISettings(BaseModel):
     frequently_asked_questions: List[str] | None = Field(
         description="most often asked questions from users."
     )
+    btn_undo: str = Field("Delete Previous", description="undo button text in chatbot")
+    btn_clear: str = Field("Clear", description="clear button text in chatbot")
+    btn_submit: str = Field("Submit", description="submit button text in chatbot")
+    work_mode_label: str = Field(
+        "Mode", description="Interaction mode, ask question or search"
+    )
+    work_modes: List[str] = Field(
+        description="Interaction modes, 1. Ask Question, 2. Search"
+    )
 
 
 class DiscordSettings(BaseModel):

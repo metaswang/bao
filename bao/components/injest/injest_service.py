@@ -55,7 +55,7 @@ class InjestService:
         new_enames = self.event_sync.find_new_entries(
             app_name=self.app_name, entry_name_list=enames.keys()
         )
-        return [entries[enames[e]] for e in new_enames]
+        return [entries[enames[e]] for e in new_enames or []]
 
     def _load_entry(self, entry_path: Path) -> Dict[str, Any]:
         with open(entry_path, "r") as f:
