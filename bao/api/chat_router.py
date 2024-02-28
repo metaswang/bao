@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 
 from bao.api.authenticate import authenticated
-from bao.web_client.chat import Chat, ChatRequestBody, ChatResponse
+from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 
 chat_router = APIRouter(prefix="/chat", dependencies=[Depends(authenticated)])
 
