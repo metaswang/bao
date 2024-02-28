@@ -1,8 +1,7 @@
-google-generativeai
 openai==1.11.1
 langchain==0.1.7
 langchain-community==0.0.17
-yacs==0.1.8
+gradio
 python-dotenv
 discord.py
 responses
@@ -12,3 +11,7 @@ lru_cache
 transformers
 pytorch
 qdrant-client
+langchain-google-genai
+pytube
+openai-whisper
+youtube-transcript-api

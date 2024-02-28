@@ -1,11 +1,145 @@
-INDEX:
-  CHUNK_SIZE: 500
-  CHUNK_OVERLAP: 50
-RETRIEVER_VECT:
-  K: 10
-  SCORE_THRESHOLD: 0.83
-RERANKER:
-  K: 4
+server:
+  port: ${PORT:8000}
+  cors:
+    enabled: True
+    allow_origins: ["*"]
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+  auth:
+    enabled: true
+    # python -c 'import base64; print("Basic " + base64.b64encode("secret:key".encode()).decode())'
+    # 'secret' is the username and 'key' is the password for basic auth by default
+    # If the auth is enabled, this value must be set in the "Authorization" header of the request.
+    secret: ${APP_SECRET}
 
-EMBEDDING:
-  MODEL: intfloat/multilingual-e5-base
+crawler:
+  source_type: youtube
+  output_dir: data/youtube_lessons
+  whisper_model: small
+  transcript_merge_size: 300
+
+injest:
+  chunk_size: 500
+  chunk_overlap: 50
+  injest_from: data/nfsc_docs
+
+llm:
+  mode: openai
+  max_new_tokens: 512
+  context_window: 3900
+
+embedding:
+  mode: local
+  embedding_size: 768
+
+vectorstore:
+  database: qdrant
+
+qdrant:
+  path: data/qdrant_local
+  # url: http://localhost:6333
+
+local:
+  embedding_hf_model_name: intfloat/multilingual-e5-base
+
+openai:
+  api_key: ${OPENAI_API_KEY}
+  eco_model: gpt-3.5-turbo-0125
+  super_model: gpt-4-0125-preview
+
+google_api:
+  api_key: ${GOOGLE_API_KEY}
+  model: gemini-pro
+
+reranker:
+  enabled: true
+  cohere:
+    api_key: ${COHERE_API_KEY}  
+    k: 4
+    model: rerank-multilingual-v2.0
+
+web:
+  title: "DC农场 爆料问答机器人"
+  header_color: "#6264f5"
+  path: "/baobot"
+  max_history_message_len: 50
+  max_history_len: 3
+  frequently_asked_questions:
+   - "郭文贵是谁?"
+   - "我们为什么要消灭中国共产党?"
+   - "喜联盟成立的重要意义是什么？"
+
+discord:
+  discord_token: ${DISCORD_TOKEN}
+  bot_id: ${DISCORD_BOT_ID}
+  chat_history_ttl: 3600
+  max_history_len: 5
+  max_history_message_len: 100
+  fallback_message: >
+   (⊙＿⊙') 我没有找到相关资料。如果你有其它问题，请随时提出。  Sorry, I couldn't find relevant information to answer your question. If you have any other questions, please feel free to ask.  
+   ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌   
+   想要搜索资料? 请在问题前加上 */s* 如“/s新中国联邦宣言的内容有哪些？”  
+   如要提问，请直接问我 😯  
+  frequently_asked_questions:
+   - "郭文贵是谁?"
+   - "我们为什么要消灭中国共产党?"
+   - "喜联盟成立的重要意义是什么？"
+
+retriever:
+  k: 10
+  # collection_name: llm_lessions
+  collection_name: bao
+  score_threshold: 0.83
+  metadata:
+    video: str
+    pub_date: str
+    source: str
+    title: str
+    start_at: int
+    pub_year: str
+    pub_year_month: str
+    topic: str
+    chunk_no: int
+
+
+chain_templates:
+  intent_classify_model: gpt-3.5
+  intent_classify_template: >
+    Do not answer the question. Instead, you need to follow below steps to generate a JSON object with following fields to classify the question: type: “greeting”, "miles", “bao" (string) confidence: 0.0 to 1.0 (float)
+    Steps:
+    1.意图识别：作为爆料文库知识领域的专家，你需要结合历史提问，分析当前输入文本然后判断提问者的意向
+    2.当有如下意向时归类为"greeting":
+      提问者想了解我（“我”作为chatbot）或和我建立联系，有如下例子但不限于这些：打招呼；问天气；问我能做什么；问吃了吗；问姓名，出生，年龄，性别；问我属于哪个农场，开发者是谁
+    3.请注意，郭先生，郭文贵，郭，或Miles or Miles Guo指同一个人，下面统一称郭文贵
+    4.当符合如下意向时归类为"miles":
+      想了解郭文贵，如“介绍郭文贵”，“介绍郭文贵爆料”，“郭文贵是谁？为什么要爆料？”，“郭文贵爆谁的料”，“郭文贵出生和背景”，”和8964的联系“，”郭文贵和中国共产党的利益或厉害关系“，”郭文贵为什么被关押“，”郭文贵的家人和员工情况“，”郭文贵相关法律纠纷“，“郭文贵庭审或开庭时间或进展或结果”等等或类似上面的问题。
+      想了爆料革命，如”介绍爆料革命“，“郭文贵为什么要爆料？”， “郭先生的爆料的时间线”，”郭爆料涉及主要人物“，”郭先生什么时候开始爆料“，”共产党为什么要阻止郭文贵爆料？“等等， 或类似上面的问题。
+    5.当不确定或不能归为上面的类别时，归类为"bao"，比如：
+      想了解郭先生对某事或对某人的看法，或类似问题
+      其它问题
+  answer_model: gpt-3.5-instruct
+  answer_template: >
+    你是一位阅读分析和写作领域的专家。请仅使用以下代码块中的内容回答问题，要求准确。如果你不知道答案，请不要回复。请注意当提到人物名称：郭先生，郭文贵和Miles Guo，以上均指同一个人。\nContext:```{context}```
+  greeting_model: gemini
+  greeting_template: >
+    你是文档聊天机器人Bob Washington，请根据三重反引号中的内容回答用户的提问，在回答的最后如果有必要你可以根据如下三重反引号中的信息详细介绍自己，并告诉用户怎么提问。
+    你的回答可以是markdown格式，要求回答全面和清晰。如果不清楚，请不要回答：
+    ```我的名字是Bob Washington. 我来自喜马拉雅华盛顿农场. 
+    我能够为你提供关于爆料革命相关知识和解答，其中涵盖从2017年1月到2023年3月的郭先生的爆料视频。如果回答有不完整或有误的地方请多向农场Adam光明战友提出。也请你根据回答中的参考部分进行参考，如果回答下方没有附带引用参考，请对我的回答保持谨慎态度。你可以按如下几种方式提问：
+    1.直接提问，比如：“哪些视频讲财新网和胡舒立？”，“杨改兰女士是中国哪个地方的人？她生前遭受了什么不公？”，“喜联盟成立的意义是？”
+    2.如果你已经清楚视频年份月份或日期，可以让回答更有针对性，比如："2020年的视频中，郭先生提到了杨改兰，她遭受了什么？"， "2021年4月27日，郭先生提到了喜币上市，有何重大意义？"
+    3.如果你知道视频来源，并能提供视频链接，我的回答会更具针对性。比如：视频https://gettr.com/streaming/p1j1gwp9b4e中，人民币国际化和数字化人民币的目的是？
+    ```
+    Input: {question}
+    Output:
+
+  query_rewrite_model: gpt-3.5-instruct
+  query_rewrite_template: >
+    DO NOT answer the question. Instead, you need to follow below steps one by one to generate a valid JSON object with following fields:
+    1.If there exists a explicit date to describe直播,视频,爆料, please store it in "pub-date" in the format yyyyMMdd. Otherwise, do not extract it.
+    2.if there exists a explicit year numbers to describe直播,视频,爆料，请将其以yyyy格式存入 "pub-year". Otherwise, do not extract it.
+    3.if there exists a explicit year and month to describe直播,视频,爆料，请将其以yyyyMM格式存入 "pub-year-month". Otherwise, do not extract it.
+    Note，each character in the value of "pub-date", "pub-year", "pub-year-month" should be in '0'-'9'
+    4.如果有直播或视频播放链接，请提取并存入 "video"，否则不要提取
+    5.构建一个可以在没有聊天历史的情况下可被理解的独立问题。不要回答问题，只需重新构造它,放入 "query". You need to remove any date,year, month and links from "query"
+    7.Ensemble the above fields into a valid json object then return it.

@@ -1,14 +1,12 @@
-import os
 from functools import lru_cache
-from langchain_core.embeddings import Embeddings
-import numpy as np
-from config.rag_config import rag_config
 from typing import List
 
 import torch.nn.functional as F
-
+from langchain_core.embeddings import Embeddings
 from torch import Tensor
-from transformers import AutoTokenizer, AutoModel
+from transformers import AutoModel, AutoTokenizer
+
+from bao.settings.settings import settings
 
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
@@ -19,9 +17,8 @@ def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
 class EmbeddingsCache(Embeddings):
     def __init__(self) -> None:
         super().__init__()
-        self.model_id = rag_config.EMBEDDING.MODEL
+        self.model_id = settings().local.embedding_hf_model_name
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
-
         self.model = AutoModel.from_pretrained(self.model_id)
 
     def inference(self, texts: List[str]) -> List[List[float]]:

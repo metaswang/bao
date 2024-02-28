@@ -1,7 +1,8 @@
 import time
 import threading
 from typing import List
-from config.rag_config import rag_config
+from bao.settings.settings import settings
+
 
 class ChatHistDict(dict):
     """
@@ -9,9 +10,12 @@ class ChatHistDict(dict):
     user: str -> List[msg: str]
     """
 
-    def __init__(self, default_ttl=None):
+    def __init__(self, max_size=10, default_ttl=None):
         super().__init__()
-        self.default_ttl = default_ttl or rag_config.CHAT_HISTORY_TTL # in seconds
+        self.default_ttl = (
+            default_ttl or settings().discord.chat_history_ttl
+        )  # in seconds
+        self.max_size = 10
         self.expire_times = {}
         self.data = {}
         self.lock = threading.Lock()  # Ensure thread-safety
@@ -28,7 +32,7 @@ class ChatHistDict(dict):
             with self.lock:
                 now = time.time()
                 for key, messages in self.items():
-                    msgs = [(m, t) for m, t in messages if t < now]
+                    msgs = [(m, t) for m, t in messages if t < now][-self.max_size :]
                     self[key] = msgs
             time.sleep(60)  # Check every min (adjust as needed)
 
