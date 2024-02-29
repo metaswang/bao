@@ -18,8 +18,8 @@ class EmbeddingsCache(Embeddings):
     def __init__(self) -> None:
         super().__init__()
         self.model_id = settings().local.embedding_hf_model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)
-        self.model = AutoModel.from_pretrained(self.model_id)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)  # type: ignore
+        self.model = AutoModel.from_pretrained(self.model_id)  # type: ignore
 
     def inference(self, texts: List[str]) -> List[List[float]]:
         batch_dict = self.tokenizer(
@@ -27,7 +27,7 @@ class EmbeddingsCache(Embeddings):
         )
         outputs = self.model(**batch_dict)
         embeddings = average_pool(
-            outputs.last_hidden_state, batch_dict["attention_mask"]
+            outputs.last_hidden_state, batch_dict["attention_mask"]  # type: ignore
         )
         embeddings = F.normalize(embeddings, p=2, dim=1)
         return embeddings.detach().cpu().numpy()
