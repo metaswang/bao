@@ -14,7 +14,9 @@ RUN chown work .venv
 ENV PATH="/home/work/app/.venv/bin:$PATH"
 
 COPY ./requirements.txt requirements.txt
-RUN pip install -Urq requirements.txt
+# to avoid install cuda dependencies when install torch
+ENV USE_CUDA=0 
+RUN pip install -Ur requirements.txt
 
 COPY --chown=work bao/ bao
 COPY --chown=work *.yaml *.md ./
