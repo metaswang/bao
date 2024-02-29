@@ -14,7 +14,9 @@ RUN chown work .venv
 ENV PATH="/home/work/app/.venv/bin:$PATH"
 
 COPY ./requirements.txt requirements.txt
-ENV TORCHVISION_NO_DEPENDENCIES=1
+
+ENV USE_CUDA=0
+RUN echo "USE_CUDA=$USE_CUDA"
 RUN pip install -Ur requirements.txt
 
 COPY --chown=work bao/ bao
