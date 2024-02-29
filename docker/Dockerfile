@@ -14,12 +14,12 @@ RUN chown work .venv
 ENV PATH="/home/work/app/.venv/bin:$PATH"
 
 COPY ./requirements.txt requirements.txt
-RUN pip install -Urq requirements.txt
+ENV TORCHVISION_NO_DEPENDENCIES=1
+RUN pip install -Ur requirements.txt
 
 COPY --chown=work bao/ bao
 COPY --chown=work *.yaml *.md ./
 
 ENV PYTHONPATH="$PYTHONPATH:/home/work/app/"
-
 USER work
 ENTRYPOINT python -m bao

@@ -17,7 +17,7 @@ Before running below cmd, make sure you have figured out the settings in setting
 
 ## Install dependencies
 ```
-# validated on python 3.11+
+# validated on python 3.11.4
 # create vitual env 
 python3 -m venv .venv
 source venv/bin/activate
