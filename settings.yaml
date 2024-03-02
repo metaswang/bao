@@ -19,7 +19,6 @@ crawler:
   transcript_merge_size: 300
   youtube_short_url_domain: "https://youtu.be"  
   youtube_url_domain: "https://www.youtube.com"
-  
   youtube_short_url_domain: "https://youtu.be"
 
 injest:
@@ -42,7 +41,6 @@ vectorstore:
   database: qdrant
 
 qdrant:
-  # path: data/qdrant_local
   path: data/qdrant_store_test
   force_disable_check_same_thread: true
 
@@ -65,34 +63,19 @@ reranker:
     k: 4
     model: rerank-multilingual-v2.0
 
-web:
-  title: "Bao Bot"
-web_ingest:
-  enabled: true
-  path: "/baoingest"
-
 web_chat:
-  enabled: false
-  # title: "Your Youtube Asistant"
-  title: "DC农场 爆料问答机器人"
+  enabled: true
+  title: "Your Youtube Asistant"
   header_color: "#6264f5"
   path: "/chatbot"
   path: "/baobot"
-  # path: "/asistant"
-  btn_undo: "↩️ 删除上一条"
-  btn_clear: "🗑️  清空"
-  btn_submit: "提交"
-  # btn_undo: "↩️ Delete Previous"
-  # btn_clear: "🗑️  Clear"
-  # btn_submit: "Submit"
-  work_mode: "模式"
-  # work_mode_label: "Mode"
+  btn_undo: "↩️ Delete Previous"
+  btn_clear: "🗑️  Clear"
+  btn_submit: "Submit"
+  work_mode_label: "Mode"
   work_modes: 
-    - "问答"
-    - "搜索"
-  # work_modes: 
-    # - "Ask Question"
-    # - "Search"
+    - "Ask Question"
+    - "Search"
   max_history_message_len: 50
   max_history_len: 3
   frequently_asked_questions:
@@ -125,7 +108,6 @@ discord:
 
 retriever:
   k: 10
-  # collection_name: llm_lessions
   collection_name: bao
   score_threshold: 0.83
   metadata:

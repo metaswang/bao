@@ -1,6 +1,6 @@
 import logging
 from itertools import chain as iter_chain
-from typing import Iterable, List, Tuple, Union
+from typing import List, Tuple, Union
 
 from injector import inject, singleton
 from pydantic import BaseModel, Field
@@ -30,8 +30,8 @@ class Chat:
     def __init__(self, chat_chain: ChatChains, show_all_quotes: bool = True) -> None:
         self.chat_chain = chat_chain
         self.settings = chat_chain.settings
-        self.max_len_history_msg = self.settings.web.max_history_message_len
-        self.max_history_len = self.settings.web.max_history_len
+        self.max_len_history_msg = self.settings.web_chat.max_history_message_len
+        self.max_history_len = self.settings.web_chat.max_history_len
         self.show_all_quotes = show_all_quotes
 
     def render_video_clip(self, video_url: str, start_at: int) -> str:

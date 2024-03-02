@@ -5,9 +5,8 @@ from injector import inject, singleton
 from langchain.chains import TransformChain
 from langchain_core.runnables import RunnableSerializable
 
-from bao.settings.settings import Settings
-from bao.utils.embeddings import EmbeddingsCache
 from bao.components.vectordb import QdrantVectorDB
+from bao.settings.settings import Settings
 
 logger = logging.getLogger()
 stream_handler = logging.StreamHandler()
