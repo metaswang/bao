@@ -7,7 +7,7 @@ from langchain_core.runnables import RunnableSerializable
 
 from bao.settings.settings import Settings
 from bao.utils.embeddings import EmbeddingsCache
-from bao.utils.vectordb import load_qdrant
+from bao.components.vectordb import QdrantVectorDB
 
 logger = logging.getLogger()
 stream_handler = logging.StreamHandler()
@@ -18,10 +18,9 @@ logger.setLevel(logging.INFO)
 @singleton
 class Retriever:
     @inject
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, db: QdrantVectorDB) -> None:
         self.settings = settings
-        self.embeddings = EmbeddingsCache()
-        self.db = load_qdrant(embeddings=self.embeddings)
+        self.db = db
 
     def chain(self) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
         def vector_search(input: Dict[str, Any]) -> Dict[str, Any]:

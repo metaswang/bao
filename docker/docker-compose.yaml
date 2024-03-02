@@ -1,0 +1,10 @@
+services:
+  baogpt:
+    build:
+      dockerfile: ./docker/Dockerfile
+    volumes:
+      - ./data/:/home/work/app/data
+    ports:
+      - 8001:8000
+    environment:
+      PORT: 8000

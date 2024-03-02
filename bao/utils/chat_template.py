@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Any, Dict
+from typing import Any, Dict, List
 
 from langchain_core.documents import Document
 
