@@ -7,6 +7,7 @@ from bao.api.chat_router import chat_router
 from bao.api.injest_router import ingest_router
 from bao.di import global_injector
 from bao.settings.settings import Settings
+from bao.web_client.ingest_ui import IngestUI
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,11 @@ def create_fastapi_app() -> FastAPI:
     logger.debug("UI module")
     from bao.web_client.chat_ui import ChatUI
 
-    ui = global_injector.get(ChatUI)
-    ui.mount_in_app(app, settings.web.path)
+    if settings.web_chat.enabled:
+        ui_chat = global_injector.get(ChatUI)
+        ui_chat.mount_in_app(app, settings.web_chat.path)
+    if settings.web_ingest.enabled:
+        ui_ingest = global_injector.get(IngestUI)
+        ui_ingest.mount_in_app(app, settings.web_ingest.path)
 
     return app

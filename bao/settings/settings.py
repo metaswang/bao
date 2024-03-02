@@ -168,7 +168,13 @@ class CohereSettings(BaseModel):
     k: int = Field(4, description="get the top k after reranked")
 
 
+class IngestUISettings(BaseModel):
+    enabled: bool = Field(False, description="bind to the FastAPI path if enabled")
+    path: str = Field(description="the UI path binded to FastAPI")
+
+
 class WebUISettings(BaseModel):
+    enabled: bool = Field(True, description="bind to the FastAPI path if enabled")
     path: str = Field(description="Relative path to the fast api server domain.")
     title: str = Field(description="Set the title of the chatbot window")
     header_color: str = Field(
@@ -280,7 +286,8 @@ class ChainTemplates(BaseModel):
 class InjestSettings(BaseModel):
     chunk_size: int = Field(description="chunk size when indexing.")
     chunk_overlap: int = Field(description="chunk overlap size.")
-    injest_from: str = Field(description="source folder for inject")
+    injest_from: str = Field(description="source folder for data injestion")
+    default_topic: str = Field(description="default topic when none valid topic given")
 
 
 class CorsSettings(BaseModel):
@@ -358,7 +365,8 @@ class Settings(BaseModel):
     qdrant: QdrantSettings
     google_api: GoogleSettings
     discord: DiscordSettings
-    web: WebUISettings
+    web_chat: WebUISettings
+    web_ingest: IngestUISettings
     retriever: RetrieverSettings
     reranker: ReRankerSettings
     chain_templates: ChainTemplates

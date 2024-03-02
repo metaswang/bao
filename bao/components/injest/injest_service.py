@@ -1,11 +1,23 @@
 import os
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, BinaryIO
+from typing import Any, BinaryIO, Dict, List, Optional, get_args
 
 import yaml
 from dotenv import load_dotenv
 from injector import inject, singleton
+
+from bao.components.injest import (
+    CHUNK_NO_KEY,
+    CONTENT_KEY,
+    PUB_DATE_KEY,
+    PUB_YEAR_KEY,
+    PUB_YEAR_MONTH_KEY,
+    SOURCE_KEY,
+    START_AT_KEY,
+    TOPIC_KEY,
+)
+from bao.components.vectordb import QdrantVectorDB
 
 load_dotenv()
 import logging
@@ -16,11 +28,11 @@ from langchain_core.documents import Document
 from qdrant_client.http import models
 from tqdm.auto import tqdm
 
+from bao.components import TOPIC_TYPE
 from bao.settings.settings import Settings
 from bao.utils.embeddings import EmbeddingsCache
 from bao.utils.injest_event_sync import InjestEventSync
 from bao.utils.strings import extract_times_to_seconds, get_metadata_alias
-from bao.utils.vectordb import load_qdrant
 
 logger = logging.getLogger(__name__)
 
@@ -28,16 +40,15 @@ logger = logging.getLogger(__name__)
 @singleton
 class InjestService:
     @inject
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: Settings, db: QdrantVectorDB) -> None:
         self.settings = settings
-        self.embeddings = EmbeddingsCache()
         chunk_size = self.settings.injest.chunk_size
         chunk_overlap = self.settings.injest.chunk_overlap
         self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size, chunk_overlap=chunk_overlap
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap  # type: ignore
         )
         self.app_name = self.settings.retriever.collection_name
-        self.db = load_qdrant(self.embeddings)
+        self.db = db
         self.event_sync = InjestEventSync(db_root=self.settings.injest.injest_from)
 
     def _find_all_entries(self) -> List[Path]:
@@ -62,20 +73,17 @@ class InjestService:
             data = yaml.safe_load(f)
             if not isinstance(data, dict):
                 return None  # type: ignore
-            if "metadata" not in data or "content" not in data:
+            if "metadata" not in data or CONTENT_KEY not in data:
                 return None  # type: ignore
             return data
 
-    def injest_bin(self, yaml_bin: BinaryIO) -> List[Document]:
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
-            try:
+    def injest_bin(self, yaml_bin: BinaryIO, yaml_fname: str) -> List[Document]:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            yaml_f = Path(temp_dir) / yaml_fname
+            with open(yaml_f, "wb") as f:
                 content = yaml_bin.read()
-                path_to_tmp = Path(tmp.name)
-                path_to_tmp.write_bytes(content)
-                return self.injest_file(path_to_tmp)
-            finally:
-                tmp.close()
-                path_to_tmp.unlink()
+                f.write(content)
+            return self.injest_file(yaml_f)
 
     def injest_file(self, yaml_file_path: Path) -> List[Document]:
         entry = yaml_file_path
@@ -85,7 +93,7 @@ class InjestService:
             )
         docs = self._injest_entry(Path(yaml_file_path))
         self.db.add_documents(docs)
-        self.event_sync.batch_insert_event(self.app_name, [entry.name])
+        self.event_sync.batch_insert_event(self.app_name, [docs[0].metadata.get(SOURCE_KEY)])  # type: ignore
         return docs
 
     def _injest_entry(self, entry_yaml: Path) -> List[Document]:
@@ -93,27 +101,30 @@ class InjestService:
         tim = 0
         entry_data = self._load_entry(entry_yaml)
         if not entry_data:
-            logging.warning(f"{entry_yaml} is not a valid data entry.")
+            raise ValueError(f"{entry_yaml} is not a valid data entry.")
         metadata = entry_data["metadata"]
-        if "topic" not in metadata:
-            metadata["topic"] = topic
-        if "source" not in metadata:
-            metadata["source"] = entry_yaml.name  # make sure the source is not empty
-        docs = [Document(page_content=entry_data["content"], metadata=metadata)]
+        if TOPIC_KEY not in metadata:
+            if topic in get_args(TOPIC_TYPE):
+                metadata[TOPIC_KEY] = topic
+            else:
+                metadata[TOPIC_KEY] = self.settings.injest.default_topic
+        if SOURCE_KEY not in metadata:
+            metadata[SOURCE_KEY] = entry_yaml.name  # make sure the source is not empty
+        docs = [Document(page_content=entry_data[CONTENT_KEY], metadata=metadata)]
         # if the source exist in metadata
         documents = self.text_splitter.split_documents(docs)
         for chunk_no, d in enumerate(documents):
             trans = d.page_content
             ts_arr = extract_times_to_seconds(trans)
             if ts_arr:
-                d.metadata.update({"start-at": ts_arr[0]})
+                d.metadata.update({START_AT_KEY: ts_arr[0]})
                 tim = ts_arr[-1]
             else:
-                d.metadata.update({"start-at": tim})
-            if d.metadata.get("pub-date"):  # yyyyMMdd
-                d.metadata["pub-year"] = d.metadata["pub-date"][:4]
-                d.metadata["pub-year-month"] = d.metadata["pub-date"][:6]
-            d.metadata["chunk-no"] = chunk_no
+                d.metadata.update({START_AT_KEY: tim})
+            if d.metadata.get(PUB_DATE_KEY):  # yyyyMMdd
+                d.metadata[PUB_YEAR_KEY] = d.metadata[PUB_DATE_KEY][:4]
+                d.metadata[PUB_YEAR_MONTH_KEY] = d.metadata[PUB_DATE_KEY][:6]
+            d.metadata[CHUNK_NO_KEY] = chunk_no
         return documents
 
     def _injest_from_folder(self):
@@ -125,7 +136,7 @@ class InjestService:
         def sync():
             if buff_window:
                 self.db.add_documents(buff_window)
-                synced_entries.extend([d.metadata["source"] for d in buff_window])
+                synced_entries.extend([d.metadata[SOURCE_KEY] for d in buff_window])
                 buff_window.clear()
 
         def add_to_buffer(documents: List[Document]):
@@ -185,3 +196,11 @@ class InjestService:
             points_selector=points_selector,
         )
         self.event_sync.remove(self.app_name, source_values)
+
+    def list_sources(self, title_like: Optional[str] = None) -> List[List[str]]:
+        """
+        title,video,pub-date
+        """
+        return self.event_sync.list_events(
+            app_name=self.app_name, entry_name_like=title_like
+        )

@@ -46,7 +46,7 @@ def ingest_youtube(
 
 
 @ingest_router.post("/yaml", tags=["Ingestion"])
-def ingest_yaml(request: Request, yalm_file: UploadFile) -> InjestResponse:
+def ingest_yaml(request: Request, yaml_file: UploadFile) -> InjestResponse:
     """Ingests from a yaml file.
     Note, yaml format should be as follow:
     metadata:
@@ -59,7 +59,7 @@ def ingest_yaml(request: Request, yalm_file: UploadFile) -> InjestResponse:
     """
     injestor: InjestService = request.state.injector.get(InjestService)
 
-    docs = injestor.injest_bin(yalm_file.file)
+    docs = injestor.injest_bin(yaml_file.file, yaml_file.filename)  # type: ignore
     if not docs:
         return InjestResponse(data=[])
     metadata = docs[0].metadata

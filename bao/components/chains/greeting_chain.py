@@ -25,4 +25,4 @@ class Greeting:
                 ("human", "{question}"),
             ]
         )
-        return chat_template | llm | StrOutputParser() # type: ignore
+        return chat_template | llm | StrOutputParser()  # type: ignore

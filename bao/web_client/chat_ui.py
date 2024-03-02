@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 RELATIVE_PATH = Path(__file__).parent.relative_to(PROJECT_ROOT_PATH)
 
 
-DEFAULT_CHAT_MODE_ASK, DEFAULT_CHAT_MODE_SEARCH = settings().web.work_modes
+DEFAULT_CHAT_MODE_ASK, DEFAULT_CHAT_MODE_SEARCH = settings().web_chat.work_modes
 DEFAULT_CHAT_MODE = [DEFAULT_CHAT_MODE_ASK, DEFAULT_CHAT_MODE_SEARCH]
 
 
@@ -45,7 +45,7 @@ class ChatUI:
             theme=gr.themes.Soft(primary_hue=gr.themes.colors.blue),
             css=".logo { "
             "display:flex;"
-            f"background-color: {self.settings.web.header_color};"
+            f"background-color: {self.settings.web_chat.header_color};"
             "height: 50px;"
             "border-radius: 5px;"
             "align-content: center;"
@@ -66,13 +66,13 @@ class ChatUI:
                 logo = f"{RELATIVE_PATH}/static/logo.png"
                 logo_path = r.move_resource_to_block_cache(logo)
                 gr.HTML(
-                    f"<div class='logo'/><img src='file={logo_path}' alt='BaoGPT'>{self.settings.web.title}</div"
+                    f"<div class='logo'/><img src='file={logo_path}' alt='BaoGPT'>{self.settings.web_chat.title}</div"
                 )
             with gr.Row(equal_height=False):
                 with gr.Column(scale=10):
                     mode = gr.Radio(
                         DEFAULT_CHAT_MODE,  # type: ignore
-                        label=self.settings.web.work_mode_label,
+                        label=self.settings.web_chat.work_mode_label,
                         value=DEFAULT_CHAT_MODE_SEARCH,
                     )
             with gr.Row(equal_height=False):
@@ -90,9 +90,9 @@ class ChatUI:
                             render_markdown=True,
                         ),
                         retry_btn=None,
-                        undo_btn=self.settings.web.btn_undo,
-                        clear_btn=self.settings.web.btn_clear,
-                        submit_btn=self.settings.web.btn_submit,
+                        undo_btn=self.settings.web_chat.btn_undo,
+                        clear_btn=self.settings.web_chat.btn_clear,
+                        submit_btn=self.settings.web_chat.btn_submit,
                         additional_inputs=[mode],
                     )
             return blocks
@@ -105,5 +105,5 @@ class ChatUI:
     def mount_in_app(self, app: FastAPI, path: str) -> None:
         blocks = self.get_ui()
         blocks.queue()
-        logger.info("Mounting the gradio UI, at path=%s", path)
+        logger.info("Mounting the Chat gradio UI, at path=%s", path)
         gr.mount_gradio_app(app, blocks, path=path)

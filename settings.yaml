@@ -23,6 +23,7 @@ injest:
   chunk_size: 500
   chunk_overlap: 50
   injest_from: data/youtube_lessons
+  default_topic: bao
 
 llm:
   mode: openai
@@ -39,6 +40,7 @@ vectorstore:
 qdrant:
   # path: data/qdrant_local
   path: data/qdrant_store_test
+  force_disable_check_same_thread: true
 
 local:
   embedding_hf_model_name: intfloat/multilingual-e5-base
@@ -59,7 +61,12 @@ reranker:
     k: 4
     model: rerank-multilingual-v2.0
 
-web:
+web_ingest:
+  enabled: true
+  path: "/baoingest"
+
+web_chat:
+  enabled: false
   # title: "Your Youtube Asistant"
   title: "DC农场 爆料问答机器人"
   header_color: "#6264f5"
