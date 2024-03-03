@@ -1,4 +1,4 @@
-# BobGPT
+# BaoGPT
 
 BobGPT is an AI project that allows you to ask questions about youtube videos.
 
@@ -9,7 +9,7 @@ BobGPT is an AI project that allows you to ask questions about youtube videos.
 
 > In the case, the target youtube video is [Let's build the GPT Tokenizer](https://www.youtube.com/watch?v=zduSFxRajkE) from Andrej Karpathy.
 
-# How it works?
+# How it works
 ![RAG Diagram](rag-framework.png)
 
 # Install & Run
