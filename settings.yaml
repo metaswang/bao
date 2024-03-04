@@ -12,7 +12,7 @@ server:
     # If the auth is enabled, this value must be set in the "Authorization" header of the request.
     secret: ${APP_SECRET}
   ssl:
-    enabled: true
+    enabled: false
     key_pem: key.pem
     secret_pem: cert.pem
 
@@ -145,7 +145,7 @@ chain_templates:
     5.当不确定或不能归为上面的类别时，归类为"bao"，比如：
       想了解郭先生对某事或对某人的看法，或类似问题
       其它问题
-  answer_model: gpt-3.5-instruct
+  answer_model: gpt-4
   answer_template: >
     你是一位阅读分析和写作领域的专家。请仅使用以下代码块中的内容回答问题，要求准确。如果你不知道答案，请不要回复。请注意当提到人物名称：郭先生，郭文贵和Miles Guo，以上均指同一个人。\nContext:```{context}```
   greeting_model: gemini
@@ -161,7 +161,7 @@ chain_templates:
     Input: {question}
     Output:
 
-  query_rewrite_model: gpt-3.5-instruct
+  query_rewrite_model: gpt-4
   query_rewrite_template: >
     DO NOT answer the question. Instead, you need to follow below steps one by one to generate a valid JSON object with following fields:
     1.If there exists a explicit date to describe直播,视频,爆料, please store it in "pub-date" in the format yyyyMMdd. Otherwise, do not extract it.

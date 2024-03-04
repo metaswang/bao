@@ -44,7 +44,7 @@ class LLMs:
             return self.google_llm
         elif llm_type == "gpt-3.5":
             return self.openai_eco_gpt
-        elif llm_type == "gpt-instruct":
+        elif llm_type == "gpt-3.5-instruct":
             return self.openai_gpt_instruct
         else:
             return self.openai_supper_gpt

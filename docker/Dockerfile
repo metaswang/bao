@@ -12,6 +12,7 @@ RUN python -m venv .venv
 RUN chown work .venv
 
 ENV PATH="/home/work/app/.venv/bin:$PATH"
+ENV HOME="/home/work"
 
 COPY ./requirements.txt requirements.txt
 
@@ -30,5 +31,6 @@ COPY *.yaml *.md ./
 RUN chown work bao *.yaml *.md
 RUN openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=New York/L=Brooklyn/O=himalaya_dc Company/CN=himalaya_dc.com"
 ENV PYTHONPATH="$PYTHONPATH:/home/work/app/"
+ENV TRANSFORMERS_CACHE=/home/work/app/data/models/.cache
 USER work
 ENTRYPOINT python -m bao
