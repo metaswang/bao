@@ -344,6 +344,12 @@ class AuthSettings(BaseModel):
     )
 
 
+class SSLSettings(BaseModel):
+    enabled: bool = Field(False, description="enabled or not")
+    key_pem: str = Field("key.pem", description="key file name")
+    cert_pem: str = Field("cert.pem", description="cert file name")
+
+
 class ServerSettings(BaseModel):
     port: int = Field(description="Port of PrivateGPT FastAPI server, defaults to 8001")
     cors: CorsSettings = Field(
@@ -353,6 +359,7 @@ class ServerSettings(BaseModel):
         description="Authentication configuration",
         default_factory=lambda: AuthSettings(enabled=False, secret="secret-key"),
     )
+    ssl: SSLSettings = Field(description="ssl settings")
 
 
 class Settings(BaseModel):

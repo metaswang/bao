@@ -11,10 +11,14 @@ server:
     # 'secret' is the username and 'key' is the password for basic auth by default
     # If the auth is enabled, this value must be set in the "Authorization" header of the request.
     secret: ${APP_SECRET}
+  ssl:
+    enabled: true
+    key_pem: key.pem
+    secret_pem: cert.pem
 
 crawler:
   source_type: youtube
-  output_dir: data/youtube_lessons
+  output_dir: data/crawl
   whisper_model: small
   transcript_merge_size: 300
   youtube_short_url_domain: "https://youtu.be"
@@ -22,7 +26,7 @@ crawler:
 injest:
   chunk_size: 500
   chunk_overlap: 50
-  injest_from: data/youtube_lessons
+  injest_from: data/crawl
   default_topic: bao
 
 llm:

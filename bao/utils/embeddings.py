@@ -7,6 +7,7 @@ from torch import Tensor
 from transformers import AutoModel, AutoTokenizer
 
 from bao.settings.settings import settings
+from bao import MODEL_CACHE
 
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
@@ -18,8 +19,8 @@ class EmbeddingsCache(Embeddings):
     def __init__(self) -> None:
         super().__init__()
         self.model_id = settings().local.embedding_hf_model_name
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id)  # type: ignore
-        self.model = AutoModel.from_pretrained(self.model_id)  # type: ignore
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_id, cache_dir=MODEL_CACHE)  # type: ignore
+        self.model = AutoModel.from_pretrained(self.model_id, cache_dir=MODEL_CACHE)  # type: ignore
 
     def inference(self, texts: List[str]) -> List[List[float]]:
         batch_dict = self.tokenizer(
