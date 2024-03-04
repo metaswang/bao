@@ -60,7 +60,7 @@ reranker:
   enabled: true
   cohere:
     api_key: ${COHERE_API_KEY}  
-    k: 4
+    k: 8
     model: rerank-multilingual-v2.0
 
 web_chat:
@@ -109,7 +109,7 @@ discord:
 retriever:
   k: 10
   collection_name: bao
-  score_threshold: 0.83
+  score_threshold: 0.85
   metadata:
     video: str
     pub_date: str

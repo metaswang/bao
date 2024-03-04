@@ -4,6 +4,12 @@ from typing import List, Tuple, Union
 
 from injector import inject, singleton
 from pydantic import BaseModel, Field
+from bao.components import (
+    CHAT_MODE,
+    CHAT_MODE_CHAT,
+    CHAT_MODE_SEARCH,
+    SEARCH_MODE_PERFIX,
+)
 
 from bao.components.chains.chat_chain import ChatChains
 from bao.utils.chat_template import RENDER_YOUTUBE_CLIP_FN, SHOW_ALL_QUOTES, gen_refence
@@ -13,10 +19,18 @@ logger = logging.getLogger(__name__)
 
 
 class ChatRequestBody(BaseModel):
+    question: str = Field("", description="question you want to ask the bot")
     chat_history: List[Union[Tuple[str], List[str]]] = Field(
-        description="Chat history. [(human message, bot message), ... (human message, bot message)]. will keep the latest 5"
+        description="Chat history. [(human message, bot message), ... (human message, bot message)]. will keep the latest 5",
     )
-    question: str = Field(description="question you want to ask the bot")
+    show_all_sources: bool = Field(
+        True,
+        description="if show all source references. In case of Discord, the size of message window is limited, so it's better to set it as false",
+    )
+    chat_mode: CHAT_MODE = Field("chat", description="Work mode: 'retrieve' or 'chat'")
+    context_size: int = Field(
+        4, description="Maximum retrieved item size in LLM context"
+    )
 
 
 class ChatResponse(BaseModel):
@@ -27,12 +41,11 @@ class ChatResponse(BaseModel):
 @singleton
 class Chat:
     @inject
-    def __init__(self, chat_chain: ChatChains, show_all_quotes: bool = True) -> None:
+    def __init__(self, chat_chain: ChatChains) -> None:
         self.chat_chain = chat_chain
         self.settings = chat_chain.settings
         self.max_len_history_msg = self.settings.web_chat.max_history_message_len
         self.max_history_len = self.settings.web_chat.max_history_len
-        self.show_all_quotes = show_all_quotes
 
     def render_video_clip(self, video_url: str, start_at: int) -> str:
         """
@@ -53,7 +66,7 @@ class Chat:
             history = input.chat_history[-self.max_history_len :]
             history = list(iter_chain.from_iterable(history))
             history = [_[: self.max_len_history_msg] for _ in history]
-            search = question.lower().startswith("/s")
+            search = question.lower().startswith(SEARCH_MODE_PERFIX)
             if search:
                 chain = self.chat_chain.retriever_chain()
                 question = question[2:].strip()
@@ -63,6 +76,8 @@ class Chat:
                 {
                     "question": question,
                     "chat_history": history,
+                    "chat_mode": CHAT_MODE_SEARCH if search else CHAT_MODE_CHAT,
+                    "context_size": input.context_size,
                 }
             )
         except Exception as e:
@@ -80,7 +95,7 @@ class Chat:
                 for alias in get_metadata_alias(doc_metadata_fields)
             },
         )
-        context[SHOW_ALL_QUOTES] = self.show_all_quotes
+        context[SHOW_ALL_QUOTES] = input.show_all_sources
         context[RENDER_YOUTUBE_CLIP_FN] = self.render_video_clip
         if search:
             if not answer.get("input_documents"):

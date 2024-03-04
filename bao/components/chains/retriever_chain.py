@@ -5,6 +5,7 @@ from injector import inject, singleton
 from langchain.chains import TransformChain
 from langchain_core.runnables import RunnableSerializable
 
+from bao.components import CHAT_MODE_SEARCH, SCALE_CONTEXT_RETREIVER
 from bao.components.vectordb import QdrantVectorDB
 from bao.settings.settings import Settings
 
@@ -17,7 +18,7 @@ logger.setLevel(logging.INFO)
 @singleton
 class Retriever:
     @inject
-    def __init__(self, settings: Settings, db: QdrantVectorDB) -> None:
+    def __init__(self, settings: Settings, db: QdrantVectorDB):
         self.settings = settings
         self.db = db
 
@@ -25,7 +26,11 @@ class Retriever:
         def vector_search(input: Dict[str, Any]) -> Dict[str, Any]:
             retriever_input = input.get("query_rewrite", {})
             retriever_input["topic"] = input.get("topic", {}).get("type")
+            chat_mode = input.get("chat_mode")
             k = self.settings.retriever.k
+            context_size = input.get("context_size", k)
+            if chat_mode == CHAT_MODE_SEARCH:
+                k = int(context_size * SCALE_CONTEXT_RETREIVER)
             metadata_keys = set(
                 [
                     field.alias or name
@@ -63,6 +68,6 @@ class Retriever:
 
         return TransformChain(
             transform=vector_search,
-            input_variables=["query_rewrite", "topic"],
+            input_variables=["query_rewrite", "topic", "chat_mode", "context_size"],
             output_variables=["vector_docs"],
         )  # type: ignore
