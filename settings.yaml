@@ -136,7 +136,7 @@ chain_templates:
     5.When uncertain or cannot be classified into the above categories, classify as "Others", like：
       def
       efg
-  answer_model: gpt-3.5-instruct
+  answer_model: gpt-4
   answer_template: >
     ou are an expert in the field of reading analysis and writing. Please answer the question using only the content in the following code block, and be accurate. If you don’t know the answer, please do not reply. \nContext:```{context}```
   greeting_model: gemini
@@ -148,12 +148,12 @@ chain_templates:
     Input: {question}
     Output:
 
-  query_rewrite_model: gpt-3.5-instruct
+  query_rewrite_model: gpt-4
   query_rewrite_template: >
     DO NOT answer the question. Instead, you need to follow below steps one by one to generate a valid JSON object with following fields:
     1. If there exists a explicit date to describe直播,视频, please store it in "pub-date" in the format yyyyMMdd. Otherwise, do not extract it.
-    2. If there exists a explicit year numbers to describe直播,视频，请将其以yyyy格式存入 "pub-year". Otherwise, do not extract it.
-    3. If there exists a explicit year and month to describe直播,视频，请将其以yyyyMM格式存入 "pub-year-month". Otherwise, do not extract it.
+    2. If there exists a explicit year numbers to describe videos or broadcasts, put it into "pub-year" as yyyy format. Otherwise, do not extract it.
+    3. If there exists a explicit year and month to describe videos or broadcasts，put it into "pub-year-month" as yyyyMMdd format. Otherwise, do not extract it.
     Note，each character in the value of "pub-date", "pub-year", "pub-year-month" should be in '0'-'9'
     4. If there is a broadcast or video playback link, please extract it and store it in "video". Otherwise, do not extract it.
     5. Construct an independent question that can be understood without the chat history. Do not answer the question, just reconstruct it and put it in "query". You need to remove any date,year, month and links from "query"
