@@ -97,10 +97,10 @@ discord:
   max_history_len: 5
   max_history_message_len: 100
   fallback_message: >
-   (⊙＿⊙') 我没有找到相关资料。如果你有其它问题，请随时提出。  Sorry, I couldn't find relevant information to answer your question. If you have any other questions, please feel free to ask.  
+   (⊙＿⊙')  Sorry, I couldn't find relevant information to answer your question. If you have any other questions, please feel free to ask.  
    ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌   
-   想要搜索资料? 请在问题前加上 /s 
-   如要提问，请直接问我 😯  
+   Do you want to search? Add prefix /s to your question.
+   Any questions? 😯  
   frequently_asked_questions:
    - "Question 1?"
    - "Question 2?"
@@ -129,21 +129,20 @@ chain_templates:
     Do not answer the question. Instead, you need to follow below steps to generate a JSON object with following fields to classify the question: type: “greeting”, "MY Category", Others" (string) confidence: 0.0 to 1.0 (float)
     Steps:
     1.Intention classification rules, blabla
-    2.当有如下意向时归类为"greeting":
+    2.Classify it as "greeting" when meet below criterion:
       abc
-    4.当符合如下意向时归类为"My Class":
+    4.Classify it as "My Class" when meet below criterion:
       cde
-    5.当不确定或不能归为上面的类别时，归类为"Others"，比如：
+    5.When uncertain or cannot be classified into the above categories, classify as "Others", like：
       def
-      其它问题
+      efg
   answer_model: gpt-3.5-instruct
   answer_template: >
-    你是一位阅读分析和写作领域的专家。请仅使用以下代码块中的内容回答问题，要求准确。如果你不知道答案，请不要回复。\nContext:```{context}```
+    ou are an expert in the field of reading analysis and writing. Please answer the question using only the content in the following code block, and be accurate. If you don’t know the answer, please do not reply. \nContext:```{context}```
   greeting_model: gemini
   greeting_template: >
-    你是文档聊天机器人Bob ，请根据三重反引号中的内容回答用户的提问，在回答的最后如果有必要你可以根据如下三重反引号中的信息详细介绍自己，并告诉用户怎么提问。
-    你的回答可以是markdown格式，要求回答全面和清晰。如果不清楚，请不要回答：
-    ```我的名字是Bob 
+    You are the document chatbot Bob. Please answer the user’s questions based on the content in the triple backticks. At the end of the answer, if necessary, you can introduce yourself in detail based on the information in the following triple backticks, and tell the user how to ask questions. Your answer can be in markdown format, and the answer should be comprehensive and clear. If you are not sure, please do not answer.
+    ```My name is Bob 
     blablabla
     ```
     Input: {question}
@@ -152,10 +151,10 @@ chain_templates:
   query_rewrite_model: gpt-3.5-instruct
   query_rewrite_template: >
     DO NOT answer the question. Instead, you need to follow below steps one by one to generate a valid JSON object with following fields:
-    1.If there exists a explicit date to describe直播,视频, please store it in "pub-date" in the format yyyyMMdd. Otherwise, do not extract it.
-    2.if there exists a explicit year numbers to describe直播,视频，请将其以yyyy格式存入 "pub-year". Otherwise, do not extract it.
-    3.if there exists a explicit year and month to describe直播,视频，请将其以yyyyMM格式存入 "pub-year-month". Otherwise, do not extract it.
+    1. If there exists a explicit date to describe直播,视频, please store it in "pub-date" in the format yyyyMMdd. Otherwise, do not extract it.
+    2. If there exists a explicit year numbers to describe直播,视频，请将其以yyyy格式存入 "pub-year". Otherwise, do not extract it.
+    3. If there exists a explicit year and month to describe直播,视频，请将其以yyyyMM格式存入 "pub-year-month". Otherwise, do not extract it.
     Note，each character in the value of "pub-date", "pub-year", "pub-year-month" should be in '0'-'9'
-    4.如果有直播或视频播放链接，请提取并存入 "video"，否则不要提取
-    5.构建一个可以在没有聊天历史的情况下可被理解的独立问题。不要回答问题，只需重新构造它,放入 "query". You need to remove any date,year, month and links from "query"
-    7.Ensemble the above fields into a valid json object then return it.
+    4. If there is a broadcast or video playback link, please extract it and store it in "video". Otherwise, do not extract it.
+    5. Construct an independent question that can be understood without the chat history. Do not answer the question, just reconstruct it and put it in "query". You need to remove any date,year, month and links from "query"
+    6. Ensemble the above fields into a valid json object then return it.
