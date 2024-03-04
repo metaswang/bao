@@ -30,7 +30,6 @@ from tqdm.auto import tqdm
 
 from bao.components import TOPIC_TYPE
 from bao.settings.settings import Settings
-from bao.utils.embeddings import EmbeddingsCache
 from bao.utils.injest_event_sync import InjestEventSync
 from bao.utils.strings import extract_times_to_seconds, get_metadata_alias
 

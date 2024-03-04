@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from injector import inject, singleton
 
 from bao import PROJECT_ROOT_PATH
+from bao.components import CHAT_MODE_CHAT, CHAT_MODE_SEARCH, SEARCH_MODE_PERFIX
 from bao.settings.settings import Settings
 from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 from bao.settings.settings import settings
@@ -29,11 +30,25 @@ class ChatUI:
         self.chat = chat
         self.settings = settings
 
-    async def _chat(self, message: str, history: List[List[str]], mode: str) -> str:
+    def _chat_mode_changed(self, mode_val: str, search_k: int):
+        if mode_val == DEFAULT_CHAT_MODE_ASK:
+            return gr.Dropdown(visible=False)
+        else:
+            return gr.Dropdown(
+                label="Top-K", choices=list(range(1, 16)), value=search_k, visible=True
+            )
+
+    async def _chat(
+        self, message: str, history: List[List[str]], mode: str, search_k: int
+    ) -> str:
         is_retriever_mode = mode == DEFAULT_CHAT_MODE_SEARCH
+        req = ChatRequestBody(question=message, chat_mode=CHAT_MODE_CHAT, chat_history=history)  # type: ignore
         if is_retriever_mode:
-            message = "/s" + message
-        res: ChatResponse = await self.chat.chat(input=ChatRequestBody(question=message, chat_history=history))  # type: ignore
+            message = SEARCH_MODE_PERFIX + message
+            req.question = message
+            req.chat_mode = CHAT_MODE_SEARCH
+            req.context_size = search_k
+        res: ChatResponse = await self.chat.chat(input=req)
         if is_retriever_mode:
             return res.reference
         else:
@@ -56,8 +71,9 @@ class ChatUI:
             ".contain { display: flex !important; flex-direction: column !important; }"
             "#component-0, #component-3, #component-10, #component-8  { height: 100% !important; }"
             "#chatbot { flex-grow: 1 !important; overflow: auto !important;}"
-            "#baobot { height: calc(100vh - 200px) !important; }"
+            "#baobot { height: calc(100vh - 300px) !important; }"
             "blockquote {"
+            "margin: 1em !important; "
             "padding: 0 1em !important; "
             "border-left: .3em solid !important; "
             "}",
@@ -74,6 +90,14 @@ class ChatUI:
                         DEFAULT_CHAT_MODE,  # type: ignore
                         label=self.settings.web_chat.work_mode_label,
                         value=DEFAULT_CHAT_MODE_SEARCH,
+                    )
+                    search_k = gr.Dropdown(
+                        label="Top-K", choices=list(range(1, 16)), value=5
+                    )
+                    mode.change(
+                        fn=self._chat_mode_changed,
+                        inputs=[mode, search_k],
+                        outputs=search_k,
                     )
             with gr.Row(equal_height=False):
                 with gr.Column(scale=10, elem_id="baobot"):
@@ -93,7 +117,7 @@ class ChatUI:
                         undo_btn=self.settings.web_chat.btn_undo,
                         clear_btn=self.settings.web_chat.btn_clear,
                         submit_btn=self.settings.web_chat.btn_submit,
-                        additional_inputs=[mode],
+                        additional_inputs=[mode, search_k],
                     )
             return blocks
 
