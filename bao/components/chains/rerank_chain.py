@@ -1,6 +1,8 @@
 from typing import Any, Dict
 
 import cohere
+import time
+from cohere.error import CohereAPIError
 from injector import inject, singleton
 from langchain.chains import TransformChain
 from langchain_core.runnables import RunnableSerializable
@@ -8,6 +10,10 @@ from langchain_core.runnables import RunnableSerializable
 from bao.components import CHAT_MODE_SEARCH
 from bao.settings.settings import Settings
 from bao.utils.strings import hash_of_text
+
+
+MAX_RETRIES_RERANK = 3
+RETRY_INTERVAL = 1  # second
 
 
 @singleton
@@ -32,15 +38,21 @@ class ReRanker:
 
             docs_hash = dict([(hash_of_text(_.page_content), _) for _ in vector_docs])
             docs = docs_hash.values()
-            rerank_resp = self.co.rerank(
-                query=question,
-                documents=[doc.page_content for doc in docs],
-                top_n=rerank_k,
-                model=self.settings.reranker.cohere.model,
-            )
-            aft_reranked = [
-                docs_hash[hash_of_text(d.document["text"])] for d in rerank_resp
-            ]
+            aft_reranked = vector_docs
+            for _ in range(MAX_RETRIES_RERANK):
+                try:
+                    rerank_resp = self.co.rerank(
+                        query=question,
+                        documents=[doc.page_content for doc in docs],
+                        top_n=rerank_k,
+                        model=self.settings.reranker.cohere.model,
+                    )
+                    aft_reranked = [
+                        docs_hash[hash_of_text(d.document["text"])] for d in rerank_resp
+                    ]
+                    break
+                except CohereAPIError:
+                    time.sleep(RETRY_INTERVAL)
             return {
                 "input_documents": (
                     aft_reranked

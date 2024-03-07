@@ -1,4 +1,6 @@
+torch==2.1.1
 openai==1.11.1
+langchain-openai==0.0.3
 langchain==0.1.7
 langchain-community==0.0.20
 gradio==4.19.2
@@ -14,4 +16,7 @@ langchain-google-genai>=0.0.9
 pytube==15.0.0
 openai-whisper==20231117
 youtube-transcript-api==0.6.2
-torch==2.1.1
+uvicorn==0.23.2
+injector==0.21.0
+python-multipart==0.0.9
+BeautifulSoup4==4.12.2

@@ -3,7 +3,7 @@ import logging
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from bao.api.chat_router import chat_router
+from bao.api.chat_router import chat_router, favicon_router
 from bao.api.injest_router import ingest_router
 from bao.di import global_injector
 from bao.settings.settings import Settings
@@ -19,6 +19,7 @@ def create_fastapi_app() -> FastAPI:
 
     app = FastAPI(dependencies=[Depends(bind_injector_to_request)])
 
+    app.include_router(favicon_router)
     app.include_router(chat_router)
     app.include_router(ingest_router)
 

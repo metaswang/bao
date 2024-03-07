@@ -1,9 +1,8 @@
-from typing import Literal, List
+from typing import List, Literal
 
 from pydantic import BaseModel, Field
-from sqlalchemy import desc
 
-from bao.components import MODEL_TYPE, METADATA_TYPE
+from bao.components import METADATA_TYPE, MODEL_TYPE
 from bao.settings.settings_loader import load_active_settings
 
 
@@ -204,6 +203,7 @@ class WebUISettings(BaseModel):
 
 
 class DiscordSettings(BaseModel):
+    enabled: bool = Field(True, description="true: ON and false for OFF")
     discord_token: str | None = Field(description="Discord client token")
     bot_id: int | None = Field(description="Discord bot ID")
     chat_history_ttl: int = Field(600, description="expire time in seconds")

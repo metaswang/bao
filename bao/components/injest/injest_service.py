@@ -48,6 +48,8 @@ class InjestService:
         )
         self.app_name = self.settings.retriever.collection_name
         self.db = db
+        # make sure the source folder is there
+        Path(self.settings.injest.injest_from).mkdir(parents=True, exist_ok=True)
         self.event_sync = InjestEventSync(db_root=self.settings.injest.injest_from)
 
     def _find_all_entries(self) -> List[Path]:

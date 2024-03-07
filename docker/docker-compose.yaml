@@ -1,10 +1,16 @@
 services:
   baogpt:
+    image: bao/rag-gpt-0.1:latest
     build:
+      context: .
+      args:
+        - UID=${UID}
+        - GID=${GID}
       dockerfile: ./docker/Dockerfile
+    user: "${UID}:${GID}"
     volumes:
-      - ./data/:/home/work/app/data
+      - ./data/:/home/${UID}/app/data
     ports:
-      - 8001:8000
+      - 8000:8000
     environment:
       PORT: 8000
