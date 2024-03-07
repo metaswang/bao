@@ -32,11 +32,11 @@ def gen_refence(
     references_section = ""
 
     def find_ref_no(doc):
-        for i in ref_docs:
+        for doc_id, i in enumerate(ref_docs):
             if documents[i].metadata.get(meta_video_key) == doc.metadata.get(
                 meta_video_key
             ):
-                return f"[{i+1}]"
+                return f"[{doc_id+1}]"
         return ""
 
     quote_text = ""
@@ -59,12 +59,12 @@ def gen_refence(
         and callable(other_keys[RENDER_YOUTUBE_CLIP_FN])
         else lambda x: seconds_to_hh_mm_ss(x[-1])
     )
-    for i in ref_docs:
+    for doc_no, i in enumerate(ref_docs):
         document = documents[i]
         # render_fn
         start_seconds = sorted(seen_refs[document.metadata.get(meta_video_key)])
         clip_links = [render_fn(document.metadata.get(meta_video_key), s) for s in start_seconds]  # type: ignore
         video_clips = ", ".join(clip_links)
-        reference_line = f"{i+1}. [{document.metadata.get(meta_title_key)}]({document.metadata.get(meta_source_key)}) {video_clips}\n"
+        reference_line = f"[{doc_no+1}]. [{document.metadata.get(meta_title_key)}]({document.metadata.get(meta_source_key)}) {video_clips}\n"
         references_section += reference_line
     return references_section

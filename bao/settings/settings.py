@@ -201,6 +201,7 @@ class WebUISettings(BaseModel):
 
 
 class DiscordSettings(BaseModel):
+    enabled: bool = Field(True, description="true: ON and false for OFF")
     discord_token: str | None = Field(description="Discord client token")
     bot_id: int | None = Field(description="Discord bot ID")
     chat_history_ttl: int = Field(600, description="expire time in seconds")

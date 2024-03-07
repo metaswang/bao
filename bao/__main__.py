@@ -7,7 +7,8 @@ from bao.fastapi_app import create_fastapi_app
 from bao.settings.settings import settings
 
 # 1 run discord client
-run_as_daemon_service()
+if settings().discord.enabled:
+    run_as_daemon_service()
 # 2 run fastapi and gradio ui - chatbot interface
 # log_config=None: do not use the uvicorn logging configuration
 # https://github.com/tiangolo/fastapi/discussions/7457#discussioncomment-5141108

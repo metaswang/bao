@@ -63,14 +63,14 @@ reranker:
 
 web_ingest:
   enabled: true
-  path: "/baoingest"
+  path: "/ingest"
 
 web_chat:
   enabled: True
   # title: "Your Youtube Asistant"
   title: "DC农场 爆料问答机器人"
   header_color: "#6264f5"
-  path: "/baobot"
+  path: "/chat"
   # path: "/asistant"
   btn_undo: "↩️ 删除上一条"
   btn_clear: "🗑️  清空"
@@ -94,6 +94,7 @@ web_chat:
    - "喜联盟成立的重要意义是什么？"
 
 discord:
+  enabled: false
   discord_token: ${DISCORD_TOKEN}
   bot_id: ${DISCORD_BOT_ID}
   chat_history_ttl: 3600

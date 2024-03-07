@@ -56,7 +56,9 @@ class ChatUI:
 
     def _build_ui(self) -> gr.Blocks:
         with gr.Blocks(
-            title="Bob Bot",
+            title=self.settings.web_chat.title,
+            head="""<link rel="icon" href="favicon.ico?v=1" type="image/x-icon" />"""
+            """<link rel="shortcut icon" href="favicon.ico?v=1" type="image/x-icon" />""",
             theme=gr.themes.Soft(primary_hue=gr.themes.colors.blue),
             css=".logo { "
             "display:flex;"
@@ -70,12 +72,12 @@ class ChatUI:
             ".logo img { height: 60%;}"
             ".contain { display: flex !important; flex-direction: column !important; }"
             "#component-0, #component-3, #component-10, #component-8  { height: 100% !important; }"
-            "#chatbot { flex-grow: 1 !important; overflow: auto !important;}"
-            "#baobot { height: calc(100vh - 300px) !important; }"
+            "#chatbot { height:550px !important;flex-grow: 1 !important; overflow: auto !important;}"
+            "#baobot { height: calc(100vh - 20%) !important; }"
             "blockquote {"
-            "margin: 1em !important; "
-            "padding: 0 1em !important; "
-            "border-left: .3em solid !important; "
+            "margin: 0 0 0.3em 0 !important; "
+            "padding: 0 0 0 0.3em !important; "
+            "border-left: .2em solid !important; "
             "}",
         ) as blocks:
             with gr.Row(equal_height=False) as r:

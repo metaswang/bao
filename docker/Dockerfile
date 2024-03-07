@@ -1,18 +1,22 @@
 FROM python:3.11.6-slim-bookworm
 
+ARG UID
+ARG GID
+ENV USER=$UID
 ENV PORT=8000
 EXPOSE 8000
 
 # Prepare a non-root user
-RUN adduser --system work
-WORKDIR /home/work/app
+RUN adduser --system ${USER} --gid ${GID}
+WORKDIR /home/${USER}/app
 
-RUN mkdir data; chown work data
+RUN mkdir data; chown -R ${USER} data
+RUN mkdir data/models; chown -R ${USER} data/models
 RUN python -m venv .venv
-RUN chown work .venv
+RUN chown ${USER} .venv
 
-ENV PATH="/home/work/app/.venv/bin:$PATH"
-ENV HOME="/home/work"
+ENV PATH="/home/${USER}/app/.venv/bin:$PATH"
+ENV HOME="/home/${USER}"
 
 COPY ./requirements.txt requirements.txt
 
@@ -23,14 +27,14 @@ RUN pip install --upgrade pip
 RUN pip install -U  torch-2.1.1+cpu-cp311-cp311-linux_x86_64.whl
 RUN rm -rf          torch-2.1.1+cpu-cp311-cp311-linux_x86_64.whl
 
-RUN echo "USE_CUDA=$USE_CUDA"
 RUN pip install -Ur requirements.txt
 
 COPY  bao/ bao
 COPY *.yaml *.md ./
-RUN chown work bao *.yaml *.md
-RUN openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=US/ST=New York/L=Brooklyn/O=himalaya_dc Company/CN=himalaya_dc.com"
-ENV PYTHONPATH="$PYTHONPATH:/home/work/app/"
-ENV TRANSFORMERS_CACHE=/home/work/app/data/models/.cache
-USER work
+RUN chown ${USER} bao *.yaml *.md
+
+RUN chown -R  ${USER} data/qdrant_local
+ENV PYTHONPATH="$PYTHONPATH:/home/${USER}/app/"
+ENV TRANSFORMERS_CACHE=/home/${USER}/app/data/models/.cache
+USER ${USER}
 ENTRYPOINT python -m bao
