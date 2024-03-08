@@ -2,12 +2,13 @@ FROM python:3.11.6-slim-bookworm
 
 ARG UID
 ARG GID
-ENV USER=$UID
+ENV USER=work
 ENV PORT=8000
 EXPOSE 8000
 
 # Prepare a non-root user
-RUN adduser --system ${USER} --gid ${GID}
+RUN groupadd -g $GID -o $USER
+RUN adduser --system ${USER} --uid ${UID} --gid ${GID}
 WORKDIR /home/${USER}/app
 
 RUN mkdir data; chown -R ${USER} data
