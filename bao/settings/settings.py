@@ -82,6 +82,14 @@ class EmbeddingSettings(BaseModel):
     )
 
 
+class AnthropicSettings(BaseModel):
+    api_key: str
+    eco_model: str = Field(
+        "claude-3-sonnet-20240229", description="Economic/cheap model name"
+    )
+    supper_model: str = Field("claude-3-opus-20240229", description="Supper model name")
+
+
 class OpenAISettings(BaseModel):
     api_base: str = Field(
         None,
@@ -95,10 +103,6 @@ class OpenAISettings(BaseModel):
     super_model: str = Field(
         "gpt-4-0125-preview",
         description="High performance model to use. Example: 'gpt-4-0125-preview'.",
-    )
-    eco_instruct_model: str = Field(
-        "gpt-3.5-turbo-instruct",
-        description="GPT3.5 Instruct model to use. Example: 'gpt-3.5-turbo-instruct'.",
     )
 
 
@@ -361,6 +365,7 @@ class Settings(BaseModel):
     embedding: EmbeddingSettings
     local: LocalSettings
     openai: OpenAISettings
+    anthropic: AnthropicSettings
     vectorstore: VectorstoreSettings
     qdrant: QdrantSettings
     google_api: GoogleSettings
