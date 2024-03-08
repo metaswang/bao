@@ -30,7 +30,7 @@ def load_yaml_with_envvars(
             raise ValueError(
                 f"Environment variable {env_var} is not set and not default was provided"
             )
-        return value or default
+        return value or default  # type: ignore
 
     loader.add_implicit_resolver("env_var_replacer", _env_replace_matcher, None)
     loader.add_constructor("env_var_replacer", load_env_var)
