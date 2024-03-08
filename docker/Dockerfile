@@ -34,7 +34,6 @@ COPY  bao/ bao
 COPY *.yaml *.md ./
 RUN chown ${USER} bao *.yaml *.md
 
-RUN chown -R  ${USER} data/qdrant_local
 ENV PYTHONPATH="$PYTHONPATH:/home/${USER}/app/"
 ENV TRANSFORMERS_CACHE=/home/${USER}/app/data/models/.cache
 USER ${USER}
