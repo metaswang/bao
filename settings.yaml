@@ -75,7 +75,7 @@ web_chat:
   # title: "Your Youtube Asistant"
   title: "DC农场 爆料问答机器人"
   header_color: "#6264f5"
-  path: "/chat"
+  path: "/"
   # path: "/asistant"
   btn_undo: "↩️ 删除上一条"
   btn_clear: "🗑️  清空"

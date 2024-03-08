@@ -1,10 +1,15 @@
 import logging
-from itertools import chain as iter_chain
-from typing import Iterable, List, Tuple, Union
 
+from typing import Iterable, List, Tuple, Union
+from langchain_core.messages import AIMessage, HumanMessage
 from injector import inject, singleton
 from pydantic import BaseModel, Field
-from bao.components import CHAT_MODE, CHAT_MODE_CHAT, CHAT_MODE_SEARCH, SEARCH_MODE_PERFIX
+from bao.components import (
+    CHAT_MODE,
+    CHAT_MODE_CHAT,
+    CHAT_MODE_SEARCH,
+    SEARCH_MODE_PERFIX,
+)
 
 from bao.components.chains.chat_chain import ChatChains
 from bao.utils.chat_template import RENDER_YOUTUBE_CLIP_FN, SHOW_ALL_QUOTES, gen_refence
@@ -58,9 +63,18 @@ class Chat:
     async def chat(self, input: ChatRequestBody) -> ChatResponse:
         try:
             question = input.question.strip()
-            history = input.chat_history[-self.max_history_len :]
-            history = list(iter_chain.from_iterable(history))
-            history = [_[: self.max_len_history_msg] for _ in history]
+            history: List[Union[Tuple[str], List[str]]] = input.chat_history[
+                -self.max_history_len :
+            ]
+            history_msg = []
+            for p in history:
+                if len(p) == 2:
+                    history_msg.append(
+                        HumanMessage(content=p[0][: self.max_len_history_msg])
+                    )
+                    history_msg.append(
+                        AIMessage(content=p[1][: self.max_len_history_msg])
+                    )
             search = question.lower().startswith(SEARCH_MODE_PERFIX)
             if search:
                 chain = self.chat_chain.retriever_chain()
@@ -70,7 +84,7 @@ class Chat:
             answer = await chain.ainvoke(
                 {
                     "question": question,
-                    "chat_history": history,
+                    "chat_history": history_msg,
                     "chat_mode": CHAT_MODE_SEARCH if search else CHAT_MODE_CHAT,
                     "context_size": input.context_size,
                 }
