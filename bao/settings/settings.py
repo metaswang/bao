@@ -83,7 +83,7 @@ class EmbeddingSettings(BaseModel):
 
 
 class AnthropicSettings(BaseModel):
-    api_key: str
+    api_key: str = Field(description="Anthropic API key")
     eco_model: str = Field(
         "claude-3-sonnet-20240229", description="Economic/cheap model name"
     )
@@ -95,7 +95,7 @@ class OpenAISettings(BaseModel):
         None,
         description="Base URL of OpenAI API. Example: 'https://api.openai.com/v1'.",
     )
-    api_key: str
+    api_key: str = Field(description="OpenAI API Key")
     eco_model: str = Field(
         "gpt-3.5-turbo-0125",
         description="The most cost-effective model to use. Example: 'gpt-3.5-turbo-0125'.",

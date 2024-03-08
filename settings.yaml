@@ -99,7 +99,7 @@ web_chat:
    - "喜联盟成立的重要意义是什么？"
 
 discord:
-  enabled: false
+  enabled: true
   discord_token: ${DISCORD_TOKEN}
   bot_id: ${DISCORD_BOT_ID}
   chat_history_ttl: 3600
