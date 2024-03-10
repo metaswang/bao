@@ -28,11 +28,11 @@ async def reply_message(message: Message) -> None:
         return
     try:
         response: str = await chat_chain.chat(message.content, str(message.author))
-        (
-            await message.author.send(response, reference=message)
-            if message.channel.type.name == "private"  # type: ignore
-            else await message.channel.send(response, reference=message)
-        )
+        sender = message.author if message.channel.type.name == "private" else message.channel  # type: ignore
+        if settings.discord.reply_mode:
+            await sender.send(response, reference=message)
+        else:
+            await sender.send(response)
     except Exception as e:
         logging.exception("Exception when bot reply: ", e)
 

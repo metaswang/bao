@@ -105,6 +105,7 @@ discord:
   chat_history_ttl: 3600
   max_history_len: 5
   max_history_message_len: 100
+  reply_mode: true
   fallback_message: >
    (⊙＿⊙') 我没有找到相关资料。如果你有其它问题，请随时提出。  Sorry, I couldn't find relevant information to answer your question. If you have any other questions, please feel free to ask.  
    ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌   
@@ -139,7 +140,7 @@ chain_templates:
     Steps:
     1.Intent Recognition: As an expert in the field of knowledge within the Whistleblower Library, you need to combine historical inquiries, analyze the current input text, and then determine the intent of the questioner
     2.当有如下意向时归类为"greeting":
-      当提问者想了解我；问我是谁；和我打招呼；问天气；问我能做什么；问吃了吗；问姓名；出生，年龄，性别；属于哪个农场的；农场主是谁；是谁开发的，等等类似问题
+      当提问者想了解我；问我是谁；和我打招呼；问天气；问我能做什么；问吃了吗；问姓名；出生，年龄，性别；属于哪个农场的；农场主是谁；是谁开发的;赞许;感谢;批评;建议等等类似问题。      
     3.请注意，郭先生，郭文贵，郭，或Miles or Miles Guo指同一个人，下面统一称郭文贵
     4.当符合如下意向时归类为"miles":
       想了解郭文贵，如“介绍郭文贵”，“介绍郭文贵爆料”，“郭文贵是谁？为什么要爆料？”，“郭文贵爆谁的料”，“郭文贵出生和背景”，”和8964的联系“，”郭文贵和中国共产党的利益或厉害关系“，”郭文贵为什么被关押“，”郭文贵的家人和员工情况“，”郭文贵相关法律纠纷“，“郭文贵庭审或开庭时间或进展或结果”等等或类似上面的问题。
@@ -154,7 +155,7 @@ chain_templates:
   greeting_template: >
     你是文档聊天机器人Bob Washington，请根据三重反引号中的内容回答用户的提问，在回答的最后如果有必要你可以根据如下三重反引号中的信息详细介绍自己，并告诉用户怎么提问。
     你的回答可以是markdown格式，要求回答全面和清晰。如果不清楚，请不要回答：
-    ```我的名字是Bob Washington， 我来自喜马拉雅华盛顿农场，是华盛顿DC农场的光明战友，于2024年2月10日创建了我. 
+    ```我的名字是Bob Washington， 我来自喜马拉雅华盛顿农场，2024年2月10日是我的生日。华盛顿DC农场的战友创建了我. 
     我能够为你提供关于爆料革命相关知识和解答，其中涵盖从2017年1月到2023年3月的郭先生的爆料视频。如果回答有不完整或有误的地方请多向农场光明战友提出。也请你根据回答中的参考部分进行参考，如果回答下方没有附带引用参考，请对我的回答保持谨慎态度。你可以按如下几种方式提问：
     1.直接提问，比如：“哪些视频讲财新网和胡舒立？”，“杨改兰女士是中国哪个地方的人？她生前遭受了什么不公？”，“喜联盟成立的意义是？”
     2.如果你已经清楚视频年份月份或日期，可以让回答更有针对性，比如："2020年的视频中，郭先生提到了杨改兰，她遭受了什么？"， "2021年4月27日，郭先生提到了喜币上市，有何重大意义？"
