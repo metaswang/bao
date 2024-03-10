@@ -35,18 +35,6 @@ class Crawler(BaseModel):
     )
 
 
-class LLMSettings(BaseModel):
-    mode: Literal["local", "openai"]
-    max_new_tokens: int = Field(
-        256,
-        description="The maximum number of token that the LLM is authorized to generate in one completion.",
-    )
-    context_window: int = Field(
-        8000,
-        description="The maximum number of context tokens for the model.",
-    )
-
-
 class VectorstoreSettings(BaseModel):
     database: Literal["qdrant"]
 
@@ -311,19 +299,19 @@ class ReRankerSettings(BaseModel):
 
 
 class ChainTemplates(BaseModel):
-    intent_classify_model: MODEL_TYPE = Field(description="intent classificatio model type from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
+    intent_classify_model: MODEL_TYPE = Field(description="intent classificatio model type")  # type: ignore
     intent_classify_template: str = Field(
         description="""Classify the user query if it is greeting-like or else.
                                         If greeting-like, the chain will be routed to greeting chain.
                                         Else the retriever and LLM answer chains will be used."""
     )
-    greeting_model: MODEL_TYPE = Field(description="model type for greeting, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
+    greeting_model: MODEL_TYPE = Field(description="model type for greeting")  # type: ignore
     greeting_template: str = Field(description="Greeting-like question answer")
-    answer_model: MODEL_TYPE = Field(description="model type for question answering, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
+    answer_model: MODEL_TYPE = Field(description="model type for question answering")  # type: ignore
     answer_template: str = Field(
         description="Using the retriever result as context to call LLM for question answering"
     )
-    query_rewrite_model: MODEL_TYPE = Field(description="model type for query rewrite, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
+    query_rewrite_model: MODEL_TYPE = Field(description="model type for query rewrite")  # type: ignore
     query_rewrite_template: str = Field(
         description="prompt template for query rewrite for retriever"
     )
@@ -403,7 +391,6 @@ class ServerSettings(BaseModel):
 
 class Settings(BaseModel):
     crawler: Crawler
-    llm: LLMSettings
     embedding: EmbeddingSettings
     local: LocalSettings
     openai: OpenAISettings
