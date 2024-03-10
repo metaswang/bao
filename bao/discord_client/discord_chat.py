@@ -31,7 +31,4 @@ class DiscordChat:
         history = self.chat_history.get(author, [])
         resp: ChatResponse = await self.chat_bot.chat(input=ChatRequestBody(question=question, chat_history=history, show_all_sources=False))  # type: ignore
         self.chat_history.add(author, (question, resp.answer))
-        if self.search_mode(question):
-            return resp.reference
-        else:
-            return f"{resp.answer}\n## References:\n\n{resp.reference}"
+        return resp.response_text(search=self.search_mode(question=message))

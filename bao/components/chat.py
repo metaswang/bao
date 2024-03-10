@@ -36,6 +36,15 @@ class ChatRequestBody(BaseModel):
 class ChatResponse(BaseModel):
     answer: str = Field("", description="chat resonpse")
     reference: str = Field("", description="source references for the answer")
+    reference_head_line: str = "### Reference"
+
+    def response_text(self, search=False) -> str:
+        if search:
+            return self.reference
+        if self.reference.strip():
+            return f"{self.answer}\n\n{self.reference_head_line}\n{self.reference}"
+        else:
+            return self.answer
 
 
 @singleton
@@ -68,7 +77,9 @@ class Chat:
             ]
             history_msg = []
             for p in history:
-                if len(p) == 2:
+                if (
+                    len(p) == 2 and p[1] is not None and p[1].strip()
+                ):  # make sure the AIMessage is not retrieved from search result
                     history_msg.append(
                         HumanMessage(content=p[0][: self.max_len_history_msg])
                     )

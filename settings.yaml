@@ -137,9 +137,9 @@ chain_templates:
   intent_classify_template: >
     Do not answer the question. Instead, you need to follow below steps to generate a JSON object with following fields to classify the question: type: “greeting”, "miles", “bao" (string) confidence: 0.0 to 1.0 (float)
     Steps:
-    1.意图识别：作为爆料文库知识领域的专家，你需要结合历史提问，分析当前输入文本然后判断提问者的意向
+    1.Intent Recognition: As an expert in the field of knowledge within the Whistleblower Library, you need to combine historical inquiries, analyze the current input text, and then determine the intent of the questioner
     2.当有如下意向时归类为"greeting":
-      提问者想了解我（“我”作为chatbot）或和我建立联系，有如下例子但不限于这些：打招呼；问天气；问我能做什么；问吃了吗；问姓名，出生，年龄，性别；问我属于哪个农场，开发者是谁
+      当提问者想了解我；问我是谁；和我打招呼；问天气；问我能做什么；问吃了吗；问姓名；出生，年龄，性别；属于哪个农场的；农场主是谁；是谁开发的，等等类似问题
     3.请注意，郭先生，郭文贵，郭，或Miles or Miles Guo指同一个人，下面统一称郭文贵
     4.当符合如下意向时归类为"miles":
       想了解郭文贵，如“介绍郭文贵”，“介绍郭文贵爆料”，“郭文贵是谁？为什么要爆料？”，“郭文贵爆谁的料”，“郭文贵出生和背景”，”和8964的联系“，”郭文贵和中国共产党的利益或厉害关系“，”郭文贵为什么被关押“，”郭文贵的家人和员工情况“，”郭文贵相关法律纠纷“，“郭文贵庭审或开庭时间或进展或结果”等等或类似上面的问题。
@@ -154,11 +154,12 @@ chain_templates:
   greeting_template: >
     你是文档聊天机器人Bob Washington，请根据三重反引号中的内容回答用户的提问，在回答的最后如果有必要你可以根据如下三重反引号中的信息详细介绍自己，并告诉用户怎么提问。
     你的回答可以是markdown格式，要求回答全面和清晰。如果不清楚，请不要回答：
-    ```我的名字是Bob Washington. 我来自喜马拉雅华盛顿农场. 
-    我能够为你提供关于爆料革命相关知识和解答，其中涵盖从2017年1月到2023年3月的郭先生的爆料视频。如果回答有不完整或有误的地方请多向农场Adam光明战友提出。也请你根据回答中的参考部分进行参考，如果回答下方没有附带引用参考，请对我的回答保持谨慎态度。你可以按如下几种方式提问：
+    ```我的名字是Bob Washington， 我来自喜马拉雅华盛顿农场，是华盛顿DC农场的光明战友，于2024年2月10日创建了我. 
+    我能够为你提供关于爆料革命相关知识和解答，其中涵盖从2017年1月到2023年3月的郭先生的爆料视频。如果回答有不完整或有误的地方请多向农场光明战友提出。也请你根据回答中的参考部分进行参考，如果回答下方没有附带引用参考，请对我的回答保持谨慎态度。你可以按如下几种方式提问：
     1.直接提问，比如：“哪些视频讲财新网和胡舒立？”，“杨改兰女士是中国哪个地方的人？她生前遭受了什么不公？”，“喜联盟成立的意义是？”
     2.如果你已经清楚视频年份月份或日期，可以让回答更有针对性，比如："2020年的视频中，郭先生提到了杨改兰，她遭受了什么？"， "2021年4月27日，郭先生提到了喜币上市，有何重大意义？"
-    3.如果你知道视频来源，并能提供视频链接，我的回答会更具针对性。比如：视频https://gettr.com/streaming/p1j1gwp9b4e中，人民币国际化和数字化人民币的目的是？
+    3.如果你知道视频来源，并能提供视频链接，我的回答会更具针对性。比如：视频https://youtu.be/7D_t9a8faA0  里，郭先生怎么评价青峰看守所的勇士的？
+    4.如果你只想搜索，非常简单：在你的问题前面加上 /s, 比如,"/s视频https://youtu.be/7D_t9a8faA0  里，郭先生怎么评价青峰看守所的勇士的？"
     ```
     Input: {question}
     Output:
@@ -166,10 +167,10 @@ chain_templates:
   query_rewrite_model: anthropic-sonnet
   query_rewrite_template: >
     DO NOT answer the question. Instead, you need to follow below steps one by one to generate a valid JSON object with following fields:
-    1.If there exists a explicit date to describe直播,视频,爆料, please store it in "pub-date" in the format yyyyMMdd. Otherwise, do not extract it.
-    2.if there exists a explicit year numbers to describe直播,视频,爆料，请将其以yyyy格式存入 "pub-year". Otherwise, do not extract it.
-    3.if there exists a explicit year and month to describe直播,视频,爆料，请将其以yyyyMM格式存入 "pub-year-month". Otherwise, do not extract it.
-    Note，each character in the value of "pub-date", "pub-year", "pub-year-month" should be in '0'-'9'
-    4.如果有直播或视频播放链接，请提取并存入 "video"，否则不要提取
-    5.构建一个可以在没有聊天历史的情况下可被理解的独立问题。不要回答问题，只需重新构造它,放入 "query". You need to remove any date,year, month and links from "query"
-    7.Ensemble the above fields into a valid json object then return it.
+    1. If there's a specific date mentioned for "live stream", "video", or "leak", store it in the "pub-date" field in the yyyyMMdd format (e.g., 20240308 for March 8, year 2024). If no date is explicitly mentioned, leave the "pub-date" field empty.
+    2. If there is an explicit year number to describe the live broadcast, video, or news, please store it in the "pub-year" field in yyyy format(e.g., 2024 for year 2024). Otherwise, do not extract it.
+    3. If there is an explicit year and month to describe the live broadcast, video, or news, please store it in the "pub-year-month" field in yyyyMM format. Otherwise, do not extract it.
+    Please Note: "pub-date", "pub-year", and "pub-year_month" should be in '0'-'9'.
+    4. If there is a live broadcast or video playback link, please extract it and store it in the "video" field. Otherwise, do not extract it.
+    5. Construct an independent question that can be understood without the chat history. Do not answer the question, just reconstruct it and put it in the "query" field. You need to remove any date, year, month, and links from "query".
+    6. Ensemble the above fields into a valid JSON object and then return it.

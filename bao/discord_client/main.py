@@ -1,3 +1,4 @@
+from pydoc import cli
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,9 +29,9 @@ async def reply_message(message: Message) -> None:
     try:
         response: str = await chat_chain.chat(message.content, str(message.author))
         (
-            await message.author.send(response)
+            await message.author.send(response, reference=message)
             if message.channel.type.name == "private"  # type: ignore
-            else await message.channel.send(response)
+            else await message.channel.send(response, reference=message)
         )
     except Exception as e:
         logging.exception("Exception when bot reply: ", e)
@@ -54,18 +55,28 @@ async def on_message(message: Message) -> None:
         await reply_message(message)
 
 
+# handling message editting
+@client.event
+async def on_message_edit(before: Message, after: Message) -> None:
+    if after.author == client.user or before.content.strip() == after.content.strip():
+        return
+    await on_message(after)
+
+
 # STEP 5: MAIN ENTRY POINT
 def main() -> None:
     client.run(token=TOKEN)
 
+
 def run_as_daemon_service():
-  """
-  Starts the daemon service in a background thread.
-  """
-  import threading
-  thread = threading.Thread(target=main)
-  thread.daemon = True  # Set the thread as a daemon
-  thread.start()    
+    """
+    Starts the daemon service in a background thread.
+    """
+    import threading
+
+    thread = threading.Thread(target=main)
+    thread.daemon = True  # Set the thread as a daemon
+    thread.start()
 
 
 if __name__ == "__main__":

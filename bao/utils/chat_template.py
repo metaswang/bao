@@ -39,8 +39,8 @@ def gen_refence(
                 return f"[{doc_id+1}]"
         return ""
 
-    quote_text = ""
     if len(documents):
+        quote_text = ""
         if not show_all_quotes:
             extract_quote = documents[0].page_content.replace("\n", " ")
             quote_text += "\n> " + extract_quote + f"{find_ref_no(documents[0])}\n"
@@ -52,19 +52,19 @@ def gen_refence(
                 extract_quote = d.page_content.replace("\n", " ")
                 quote_text += "\n> " + extract_quote + f"{find_ref_no(d)}\n\n"
 
-    references_section += quote_text + "\n"
-    render_fn = (
-        other_keys.get(RENDER_YOUTUBE_CLIP_FN)
-        if RENDER_YOUTUBE_CLIP_FN in other_keys
-        and callable(other_keys[RENDER_YOUTUBE_CLIP_FN])
-        else lambda x: seconds_to_hh_mm_ss(x[-1])
-    )
-    for doc_no, i in enumerate(ref_docs):
-        document = documents[i]
-        # render_fn
-        start_seconds = sorted(seen_refs[document.metadata.get(meta_video_key)])
-        clip_links = [render_fn(document.metadata.get(meta_video_key), s) for s in start_seconds]  # type: ignore
-        video_clips = ", ".join(clip_links)
-        reference_line = f"[{doc_no+1}]. [{document.metadata.get(meta_title_key)}]({document.metadata.get(meta_source_key)}) {video_clips}\n"
-        references_section += reference_line
+        references_section += quote_text + "\n"
+        render_fn = (
+            other_keys.get(RENDER_YOUTUBE_CLIP_FN)
+            if RENDER_YOUTUBE_CLIP_FN in other_keys
+            and callable(other_keys[RENDER_YOUTUBE_CLIP_FN])
+            else lambda x: seconds_to_hh_mm_ss(x[-1])
+        )
+        for doc_no, i in enumerate(ref_docs):
+            document = documents[i]
+            # render_fn
+            start_seconds = sorted(seen_refs[document.metadata.get(meta_video_key)])
+            clip_links = [render_fn(document.metadata.get(meta_video_key), s) for s in start_seconds]  # type: ignore
+            video_clips = ", ".join(clip_links)
+            reference_line = f"[{doc_no+1}]. [{document.metadata.get(meta_title_key)}]({document.metadata.get(meta_source_key)}) {video_clips}\n"
+            references_section += reference_line
     return references_section

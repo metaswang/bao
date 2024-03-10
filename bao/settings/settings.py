@@ -1,9 +1,10 @@
-from typing import List, Literal
+from typing import Dict, List, Literal, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from bao.components import METADATA_TYPE, MODEL_TYPE
 from bao.settings.settings_loader import load_active_settings
+from bao.utils.strings import date_from_yyyy, date_from_yyyymm, date_from_yyyymmdd
 
 
 class Crawler(BaseModel):
@@ -230,29 +231,68 @@ class DiscordSettings(BaseModel):
             return "\n".join(self.frequently_asked_questions or [])
 
 
+class MetadataValue(BaseModel):
+    video: str | None = Field("", description="video URL")
+    source: str | None = Field("", description="source path or URL")
+    pub_date: Union[str, int] | None = Field(
+        "", alias="pub-date", description="string as date. yyyyMMdd format"
+    )
+    pub_year: Union[str, int] | None = Field(
+        "", alias="pub-year", description="string as date. yyyy format"
+    )
+    pub_year_month: Union[str, int] | None = Field(
+        "", alias="pub-year-month", description="string as date. yyyyMM format"
+    )
+    title: str | None = Field("", description="source title")
+    start_at: int | None = Field(None, description="video clip started at")
+    chunk_no: int | None = Field(None, description="document chunk no")
+    topic: str | None = Field("", description="document topic / category name")
+
+    @field_validator("pub_date")
+    def validate_date(cls, value):
+        return date_from_yyyymmdd(value)
+
+    @field_validator("pub_year_month")
+    def validate_year_month(cls, value):
+        return date_from_yyyymm(value)
+
+    @field_validator("pub_year")
+    def validate_year(cls, value):
+        return date_from_yyyy(value)
+
+    def to_dict(self, **kwargs) -> Dict[str, Union[str, int]]:
+        model_dic = self.model_dump(**kwargs)
+        for fname, finf in self.model_fields.items():
+            if finf.alias and fname in model_dic:
+                model_dic[finf.alias] = model_dic[fname]
+                del model_dic[fname]
+        return model_dic
+
+
 class MetadataSchema(BaseModel):
-    video: METADATA_TYPE | None = Field(None, alias="video", description="video link")
+    video: METADATA_TYPE | None = Field("str", alias="video", description="video link")
     source: METADATA_TYPE | None = Field(
-        None, alias="source", description="subtitle html link"
+        "str", alias="source", description="subtitle html link"
     )
     pub_date: METADATA_TYPE | None = Field(
-        None, alias="pub-date", description="video publish date"
+        "str", alias="pub-date", description="video publish date"
     )
     pub_year: METADATA_TYPE | None = Field(
-        None, alias="pub-year", description="video publish year"
+        "str", alias="pub-year", description="video publish year"
     )
     pub_year_month: METADATA_TYPE | None = Field(
-        None, alias="pub-year-month", description="video publish year and month"
+        "str", alias="pub-year-month", description="video publish year and month"
     )
     title: METADATA_TYPE | None = Field(None, alias="title", description="video title")
     start_at: METADATA_TYPE | None = Field(
-        None, alias="start-at", description="video title"
+        "int", alias="start-at", description="video title"
     )
     chunk_no: METADATA_TYPE | None = Field(
-        None, alias="chunk-no", description="chunk no in the document"
+        "int", alias="chunk-no", description="chunk no in the document"
     )
     topic: METADATA_TYPE | None = Field(
-        description="topic that will be attached to document.metadata and narrow the retriever"
+        "str",
+        description="topic that will be attached to document.metadata and narrow the retriever",
     )
 
 
