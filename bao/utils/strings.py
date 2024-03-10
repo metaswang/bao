@@ -1,5 +1,8 @@
 import hashlib
 import re
+from datetime import datetime
+from typing import Union
+
 from pydantic import BaseModel
 
 
@@ -111,3 +114,39 @@ def format_seconds(seconds: float) -> str:
 
 def get_metadata_alias(metadata: BaseModel):
     return set([field.alias or name for name, field in metadata.model_fields.items()])
+
+
+from datetime import datetime
+
+
+def date_from_yyyymmdd(date_val: Union[str, int]) -> str:
+    date_val = str(date_val)
+    if date_val:
+        try:
+            datetime.strptime(date_val[:8], "%Y%m%d")
+            return date_val[:8]
+        except:
+            return ""
+    return date_val
+
+
+def date_from_yyyymm(date_val: Union[str, int]) -> str:
+    date_val = str(date_val)
+    if date_val:
+        try:
+            datetime.strptime(date_val[:6], "%Y%m")
+            return date_val[:6]
+        except:
+            return ""
+    return date_val
+
+
+def date_from_yyyy(date_val: Union[str, int]) -> str:
+    date_val = str(date_val)
+    if date_val:
+        try:
+            datetime.strptime(date_val[:4], "%Y")
+            return date_val[:4]
+        except:
+            return ""
+    return date_val

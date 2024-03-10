@@ -1,6 +1,6 @@
 # BaoGPT
 
-BobGPT is an AI project that allows you to ask questions about youtube videos.
+BaoGPT is an AI project that allows you to ask questions about youtube videos.
 
 * Web UI (based on Gradio)
 ![Gradio Web UI](/gradio-ui.png)

@@ -49,10 +49,7 @@ class ChatUI:
             req.chat_mode = CHAT_MODE_SEARCH
             req.context_size = search_k
         res: ChatResponse = await self.chat.chat(input=req)
-        if is_retriever_mode:
-            return res.reference
-        else:
-            return f"{res.answer}\n\n\n## References:\n\n{res.reference}"
+        return res.response_text(search=is_retriever_mode)
 
     def _build_ui(self) -> gr.Blocks:
         with gr.Blocks(

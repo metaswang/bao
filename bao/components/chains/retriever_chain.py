@@ -8,6 +8,7 @@ from langchain_core.runnables import RunnableSerializable
 from bao.components import CHAT_MODE_SEARCH, SCALE_CONTEXT_RETREIVER
 from bao.components.vectordb import QdrantVectorDB
 from bao.settings.settings import Settings
+from bao.settings.settings import MetadataValue
 
 logger = logging.getLogger()
 stream_handler = logging.StreamHandler()
@@ -31,17 +32,10 @@ class Retriever:
             context_size = input.get("context_size", k)
             if chat_mode == CHAT_MODE_SEARCH:
                 k = int(context_size * SCALE_CONTEXT_RETREIVER)
-            metadata_keys = set(
-                [
-                    field.alias or name
-                    for name, field in self.settings.retriever.metadata.model_fields.items()
-                ]
+            filter_model = MetadataValue(**retriever_input).to_dict(
+                exclude_defaults=True
             )
-            filter = {
-                key: retriever_input[key]
-                for key in metadata_keys
-                if key in retriever_input and retriever_input[key]
-            } or None
+            filter = filter_model or None
             query = retriever_input.get(
                 "query"
             )  # reformulated key for vector retriever
@@ -49,7 +43,7 @@ class Retriever:
             docs_and_similarities = self.db.similarity_search_with_score(
                 query,
                 k=k,
-                filter=filter,
+                filter=filter,  # type: ignore
                 score_threshold=self.settings.retriever.score_threshold,
             )
             if not len(docs_and_similarities):
