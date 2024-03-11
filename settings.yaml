@@ -101,11 +101,13 @@ web_chat:
 
 discord:
   enabled: true
+  reply_mode: true
   discord_token: ${DISCORD_TOKEN}
   bot_id: ${DISCORD_BOT_ID}
   chat_history_ttl: 3600
   max_history_len: 5
   max_history_message_len: 100
+  reply_mode: true
   fallback_message: >
    (⊙＿⊙')  Sorry, I couldn't find relevant information to answer your question. If you have any other questions, please feel free to ask.  
    ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌   

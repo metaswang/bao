@@ -103,8 +103,8 @@ class Chat:
         except Exception as e:
             logger.exception("failed to answer:", e)
             return ChatResponse(
-                answer="",
-                reference=f"{self.settings.discord.fallback_message}\nFrequently Asked Questions:\n{self.settings.discord.get_frequently_asked_questions()}",
+                answer=f"{self.settings.discord.fallback_message}\nFrequently Asked Questions:\n{self.settings.discord.get_frequently_asked_questions()}",
+                reference="",
             )
 
         doc_metadata_fields = self.settings.retriever.metadata
@@ -120,8 +120,8 @@ class Chat:
         if search:
             if not answer.get("input_documents"):
                 return ChatResponse(
-                    answer="",
-                    reference=f"{self.settings.discord.fallback_message}\nFrequently Asked Questions:\n{self.settings.discord.get_frequently_asked_questions()}",
+                    answer=f"{self.settings.discord.fallback_message}\nFrequently Asked Questions:\n{self.settings.discord.get_frequently_asked_questions()}",
+                    reference="",
                 )
             return ChatResponse(answer="", reference=gen_refence(**context))
         answer_txt = answer.get("output_text") if not search else ""
