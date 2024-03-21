@@ -44,18 +44,23 @@ class Retriever:
                 query,
                 k=k,
                 filter=filter,  # type: ignore
-                score_threshold=self.settings.retriever.score_threshold,
             )
-            if not len(docs_and_similarities):
-                raise Exception(
-                    f"no relevant documents found! score threshold: {self.settings.retriever.score_threshold}"
-                )
-            docs = [doc for doc, _ in docs_and_similarities]
-            scores = [score for _, score in docs_and_similarities]
+            score_threshold = self.settings.retriever.score_threshold
+            docs = [doc for doc, _ in docs_and_similarities if _ >= score_threshold]
+            scores = [
+                score for _, score in docs_and_similarities if score >= score_threshold
+            ]
             if scores:
                 logger.info(
                     f"score distribution: max={max(scores)} min={min(scores)} avg={sum(scores)/len(scores):0.4f}"
                 )
+            if not len(docs):
+                logger.warning(
+                    f"no relevant documents found with score threshold: {self.settings.retriever.score_threshold}!"
+                )
+                # use top - 2
+                docs = [doc for doc, _ in docs_and_similarities][:2]
+
             return {
                 "vector_docs": docs,
             }

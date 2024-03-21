@@ -39,6 +39,9 @@ class LLMs:
         self.anthropic_supper = ChatAnthropic(
             model_name=settings.anthropic.supper_model, temperature=0.01, verbose=True
         )
+        self.anthropic_haiku = ChatAnthropic(
+            model_name=settings.anthropic.supper_model, temperature=0.01, verbose=True
+        )
 
     def get_llm(self, llm_type: MODEL_TYPE) -> BaseChatModel:  # type: ignore
         if llm_type == "gemini":
@@ -51,5 +54,7 @@ class LLMs:
             return self.anthropic_supper
         elif llm_type == "anthropic-sonnet":
             return self.anthropic_eco
+        elif llm_type == "anthropic-haiku":
+            return self.anthropic_haiku
         else:
             raise ValueError(f"Not support model type: {llm_type}")

@@ -1,17 +1,18 @@
 import logging
-
 from typing import Iterable, List, Tuple, Union
-from langchain_core.messages import AIMessage, HumanMessage
+
 from injector import inject, singleton
+from langchain_core.messages import AIMessage, HumanMessage
 from pydantic import BaseModel, Field
+
 from bao.components import (
     CHAT_MODE,
     CHAT_MODE_CHAT,
     CHAT_MODE_SEARCH,
     SEARCH_MODE_PERFIX,
 )
-
 from bao.components.chains.chat_chain import ChatChains
+from bao.settings.settings import settings
 from bao.utils.chat_template import RENDER_YOUTUBE_CLIP_FN, SHOW_ALL_QUOTES, gen_refence
 from bao.utils.strings import get_metadata_alias, seconds_to_hh_mm_ss
 
@@ -40,11 +41,15 @@ class ChatResponse(BaseModel):
 
     def response_text(self, search=False) -> str:
         if search:
-            return self.reference
+            return self.reference or settings().discord.fallback_message
+        answer = ""
         if self.reference.strip():
-            return f"{self.answer}\n\n{self.reference_head_line}\n{self.reference}"
+            answer = f"{self.answer}\n\n{self.reference_head_line}\n{self.reference}"
         else:
-            return self.answer
+            answer = self.answer
+        if not answer.strip():
+            return settings().discord.fallback_message
+        return answer
 
 
 @singleton

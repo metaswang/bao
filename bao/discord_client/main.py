@@ -26,9 +26,19 @@ chat_chain = global_injector.get(DiscordChat)
 async def reply_message(message: Message) -> None:
     if not message.content:
         return
+    if message.channel.type.name == "private":  # type: ignore
+        sender = message.author
+    elif not settings.discord.limit_channel:  # no channel constrain for the bot
+        sender = message.channel
+    elif (
+        message.channel.id in settings.discord.limit_channel
+    ):  # limited to the given channel id
+        sender = message.channel
+    else:
+        logger.warning("Not supported chatting channel for the bot!")
+        return
     try:
         response: str = await chat_chain.chat(message.content, str(message.author))
-        sender = message.author if message.channel.type.name == "private" else message.channel  # type: ignore
         if settings.discord.reply_mode:
             await sender.send(response, reference=message)
         else:
