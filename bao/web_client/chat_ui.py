@@ -11,7 +11,7 @@ from bao.components import CHAT_MODE_CHAT, CHAT_MODE_SEARCH, SEARCH_MODE_PERFIX
 from bao.settings.settings import Settings
 from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 from bao.settings.settings import settings
-import time
+
 
 logger = logging.getLogger(__name__)
 

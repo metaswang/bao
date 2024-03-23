@@ -10,6 +10,9 @@ from langchain_core.runnables import RunnableSerializable
 from bao.components import CHAT_MODE_SEARCH
 from bao.settings.settings import Settings
 from bao.utils.strings import hash_of_text
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 MAX_RETRIES_RERANK = 3
@@ -36,6 +39,7 @@ class ReRanker:
             elif len(vector_docs) <= self.settings.reranker.cohere.k:
                 return {"input_documents": vector_docs}
 
+            time_st = time.time()
             docs_hash = dict([(hash_of_text(_.page_content), _) for _ in vector_docs])
             docs = docs_hash.values()
             aft_reranked = vector_docs
@@ -53,6 +57,7 @@ class ReRanker:
                     break
                 except CohereAPIError:
                     time.sleep(RETRY_INTERVAL)
+            logger.info(f"Elapsed time for rerank: {time.time() - time_st:0.3f}")
             return {
                 "input_documents": (
                     aft_reranked
