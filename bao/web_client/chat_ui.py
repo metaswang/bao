@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
 import gradio as gr
 from fastapi import FastAPI
@@ -11,6 +11,7 @@ from bao.components import CHAT_MODE_CHAT, CHAT_MODE_SEARCH, SEARCH_MODE_PERFIX
 from bao.settings.settings import Settings
 from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 from bao.settings.settings import settings
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class ChatUI:
 
     async def _chat(
         self, message: str, history: List[List[str]], mode: str, search_k: int
-    ) -> str:
+    ) -> Any:
         is_retriever_mode = mode == DEFAULT_CHAT_MODE_SEARCH
         req = ChatRequestBody(question=message, chat_mode=CHAT_MODE_CHAT, chat_history=history)  # type: ignore
         if is_retriever_mode:
@@ -48,8 +49,14 @@ class ChatUI:
             req.question = message
             req.chat_mode = CHAT_MODE_SEARCH
             req.context_size = search_k
-        res: ChatResponse = await self.chat.chat(input=req)
-        return res.response_text(search=is_retriever_mode)
+            res: ChatResponse = await self.chat.chat(input=req)
+            yield res.reference  # type: ignore
+        else:
+            answer = self.chat.stream_chat(input=req)
+            ares = ""
+            async for token in answer:
+                ares += token
+                yield ares
 
     def _build_ui(self) -> gr.Blocks:
         with gr.Blocks(

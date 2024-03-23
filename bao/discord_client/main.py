@@ -40,7 +40,7 @@ async def reply_message(message: Message) -> None:
     try:
         response: str = await chat_chain.chat(message.content, str(message.author))
         if settings.discord.reply_mode:
-            await sender.send(response, reference=message)
+            await sender.send(response, reference=message)  # type: ignore
         else:
             await sender.send(response)
     except Exception as e:

@@ -3,7 +3,7 @@ from bao.components import MODEL_TYPE
 from bao.settings.settings import Settings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
+from bao.utils.anthropic_with_callbacks import ChatAnthropicWithCallback
 from langchain_core.language_models.chat_models import BaseChatModel
 
 
@@ -23,24 +23,32 @@ class LLMs:
         self.openai_eco_gpt = ChatOpenAI(
             model=settings.openai.eco_model,
             temperature=0.01,
-            api_key=settings.openai.api_key,
             verbose=True,
         )
         self.openai_supper_gpt = ChatOpenAI(
             model=settings.openai.super_model,
             temperature=0.01,
-            api_key=settings.openai.api_key,
             verbose=True,
+            streaming=True,
         )
         # anthropic sonnec
-        self.anthropic_eco = ChatAnthropic(
-            model_name=settings.anthropic.eco_model, temperature=0.01, verbose=True
+        self.anthropic_eco = ChatAnthropicWithCallback(
+            model_name=settings.anthropic.eco_model,
+            temperature=0.01,
+            verbose=True,
+            streaming=True,
         )
-        self.anthropic_supper = ChatAnthropic(
-            model_name=settings.anthropic.supper_model, temperature=0.01, verbose=True
+        self.anthropic_supper = ChatAnthropicWithCallback(
+            model_name=settings.anthropic.supper_model,
+            temperature=0.01,
+            verbose=True,
+            streaming=True,
         )
-        self.anthropic_haiku = ChatAnthropic(
-            model_name=settings.anthropic.supper_model, temperature=0.01, verbose=True
+        self.anthropic_haiku = ChatAnthropicWithCallback(
+            model_name=settings.anthropic.supper_model,
+            temperature=0.01,
+            verbose=True,
+            streaming=True,
         )
 
     def get_llm(self, llm_type: MODEL_TYPE) -> BaseChatModel:  # type: ignore
