@@ -12,6 +12,7 @@ from bao.settings.settings import Settings
 from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 from bao.settings.settings import settings
 
+
 logger = logging.getLogger(__name__)
 
 RELATIVE_PATH = Path(__file__).parent.relative_to(PROJECT_ROOT_PATH)

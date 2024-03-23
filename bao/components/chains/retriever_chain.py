@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import Any, Dict
 
@@ -10,10 +11,7 @@ from bao.components.vectordb import QdrantVectorDB
 from bao.settings.settings import Settings
 from bao.settings.settings import MetadataValue
 
-logger = logging.getLogger()
-stream_handler = logging.StreamHandler()
-logger.addHandler(stream_handler)
-logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @singleton
@@ -25,6 +23,7 @@ class Retriever:
 
     def chain(self) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
         def vector_search(input: Dict[str, Any]) -> Dict[str, Any]:
+            time_st = time.time()
             retriever_input = input.get("query_rewrite", {})
             retriever_input["topic"] = input.get("topic", {}).get("type")
             chat_mode = input.get("chat_mode")
@@ -60,7 +59,7 @@ class Retriever:
                 )
                 # use top - 2
                 docs = [doc for doc, _ in docs_and_similarities][:2]
-
+            logger.info(f"Elapsed time for vector search: {time.time() - time_st:0.3f}")
             return {
                 "vector_docs": docs,
             }

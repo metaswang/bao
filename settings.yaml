@@ -46,6 +46,7 @@ qdrant:
 
 local:
   embedding_hf_model_name: intfloat/multilingual-e5-base
+  embedding_hf_model_tokens: 512 # for e5 model
 
 anthropic:
   api_key: ${ANTHROPIC_API_KEY}

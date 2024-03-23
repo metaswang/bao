@@ -45,6 +45,9 @@ class LocalSettings(BaseModel):
     embedding_hf_model_name: str | None = Field(
         None, description="Name of the HuggingFace model to use for embeddings"
     )
+    embedding_hf_model_tokens: int | None = Field(
+        512, description="Max number of tokens the HuggingFace embedding model can take"
+    )
     prompt_style: Literal["default", "llama2", "tag", "mistral", "chatml"] = Field(
         "llama2",
         description=(

@@ -30,7 +30,7 @@ def create_fastapi_app() -> FastAPI:
             CORSMiddleware,
             allow_credentials=settings.server.cors.allow_credentials,
             allow_origins=settings.server.cors.allow_origins,
-            allow_origin_regex=settings.server.cors.allow_origin_regex,
+            allow_origin_regex=settings.server.cors.allow_origin_regex,  # type: ignore
             allow_methods=settings.server.cors.allow_methods,
             allow_headers=settings.server.cors.allow_headers,
         )

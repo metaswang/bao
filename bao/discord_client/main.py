@@ -9,7 +9,7 @@ from bao.discord_client.discord_chat import DiscordChat
 from bao.di import global_injector
 from bao.settings.settings import Settings
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 # STEP 0: LOAD OUR TOKEN FROM SOMEWHERE SAFE
 settings = global_injector.get(Settings)

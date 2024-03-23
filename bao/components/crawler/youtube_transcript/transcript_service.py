@@ -14,7 +14,7 @@ from bao.utils.strings import format_seconds, seconds_to_hh_mm_ss
 
 import yaml
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 @singleton

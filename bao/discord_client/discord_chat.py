@@ -8,7 +8,7 @@ from bao.components.chat import Chat, ChatRequestBody, ChatResponse
 from bao.utils.strings import clean_msg
 from bao.utils.ttl_dict import ChatHistDict
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 @singleton
