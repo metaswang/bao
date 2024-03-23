@@ -83,6 +83,7 @@ class AnthropicSettings(BaseModel):
         "claude-3-sonnet-20240229", description="Economic/cheap model name"
     )
     supper_model: str = Field("claude-3-opus-20240229", description="Supper model name")
+    haiku_model: str = Field("claude-3-haiku-20240229", description="Haiku model name")
 
 
 class OpenAISettings(BaseModel):
@@ -216,6 +217,9 @@ class DiscordSettings(BaseModel):
     )
     frequently_asked_questions: List[str] | None = Field(
         description="most often asked questions from users."
+    )
+    limit_channel: List[int] | None = Field(
+        None, description="constrain the channel id that users can interact the bot"
     )
 
     def get_frequently_asked_questions(self, markdown=True) -> str:
