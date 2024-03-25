@@ -97,7 +97,7 @@ web_chat:
   btn_clear: "Clear"
   btn_submit: "Submit"
   work_mode_label: ""
-  work_modes: "Mode"
+  work_modes:
    - "Ask Question"
    - "Search"
 
