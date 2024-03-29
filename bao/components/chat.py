@@ -109,26 +109,34 @@ class Chat:
 
     async def chat(self, input: ChatRequestBody) -> ChatResponse:
         try:
-            question, history_msg, search = self.parse_input(input)
-            if search:
-                chain = self.chat_chain.retriever_chain()
-                question = question[2:].strip()
-            else:
-                chain = self.chat_chain.chat_chain()
-            answer = await chain.ainvoke(
-                {
-                    "question": question,
-                    "chat_history": history_msg,
-                    "chat_mode": CHAT_MODE_SEARCH if search else CHAT_MODE_CHAT,
-                    "context_size": input.context_size,
-                }
-            )
+            return await self._chat(input)
         except Exception as e:
-            logger.exception("failed to answer:", e)
-            return ChatResponse(
-                answer=f"{self.settings.discord.fallback_message}\nFrequently Asked Questions:\n{self.settings.discord.get_frequently_asked_questions()}",
-                reference="",
-            )
+            try:
+                return await self._chat(input, fallback=True)
+            except:
+                logger.exception("failed to answer:", e)
+                return ChatResponse(
+                    answer=f"{self.settings.discord.fallback_message}\nFrequently Asked Questions:\n{self.settings.discord.get_frequently_asked_questions()}",
+                    reference="",
+                )
+
+    async def _chat(
+        self, input: ChatRequestBody, fallback: bool = False
+    ) -> ChatResponse:
+        question, history_msg, search = self.parse_input(input)
+        if search:
+            chain = self.chat_chain.retriever_chain(fallback)
+            question = question[2:].strip()
+        else:
+            chain = self.chat_chain.chat_chain(fallback)
+        answer = await chain.ainvoke(
+            {
+                "question": question,
+                "chat_history": history_msg,
+                "chat_mode": CHAT_MODE_SEARCH if search else CHAT_MODE_CHAT,
+                "context_size": input.context_size,
+            }
+        )
         if search:
             if not answer.get("input_documents"):
                 return ChatResponse(

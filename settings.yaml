@@ -65,7 +65,7 @@ reranker:
   enabled: true
   cohere:
     api_key: ${COHERE_API_KEY}  
-    k: 8
+    k: 4
     model: rerank-multilingual-v2.0
 
 web_ingest:
@@ -139,7 +139,9 @@ retriever:
 
 
 chain_templates:
-  intent_classify_model: anthropic-haiku
+  intent_classify_model: 
+    - anthropic-haiku
+    - gpt-3.5
   intent_classify_template: >
     请注意如下”郭先生“，”郭文贵“，“郭”，或”Miles“ or ”Miles Guo“,“七哥” 均指同一个人。
     As an expert in the field of intent classification, you need to combine historical inquiries, analyze the current input text, and then determine the intent of the questioner.
@@ -155,10 +157,14 @@ chain_templates:
       for example, 郭先生对某人或某事的看法或建议；
       其它不属于以上任何
       
-  answer_model: anthropic-sonnet
+  answer_model: 
+   - anthropic-sonnet
+   - gpt-4
   answer_template: >
     你是一位阅读分析和写作领域的专家。请仅使用以下代码块中的内容回答问题，要求准确。如果你不知道答案，请不要回复。请注意当提到人物名称：七哥，郭先生，郭文贵和Miles Guo，以上均指同一个人。\nContext:```{context}```
-  greeting_model: gemini
+  greeting_model: 
+    - gemini
+    - gpt-3.5
   greeting_template: >
     你是文档聊天机器人Bob Washington，请根据三重反引号中的内容回答用户的提问，在回答的最后如果有必要你可以根据如下三重反引号中的信息详细介绍自己，并告诉用户怎么提问。
     你的回答可以是markdown格式，要求回答全面和清晰。如果不清楚，请不要回答：
@@ -172,7 +178,9 @@ chain_templates:
     Input: {question}
     Output:
 
-  query_rewrite_model: anthropic-haiku
+  query_rewrite_model: 
+    - anthropic-haiku
+    - gpt-3.5
   query_rewrite_template: >
     DO NOT answer the question. Instead, you need to follow below steps one by one to generate a valid JSON object with following fields:
     1. If there's a specific date mentioned for "live stream", "video", or "leak", store it in the "pub-date" field in the yyyyMMdd format (e.g., 20240308 for March 8, year 2024). If no date is explicitly mentioned, leave the "pub-date" field empty.

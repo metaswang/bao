@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, List
 
 
 MODEL_TYPE = Literal[
@@ -9,6 +9,7 @@ MODEL_TYPE = Literal[
     "anthropic-opus",
     "anthropic-haiku",
 ]
+MODEL_TYPES = List[MODEL_TYPE]
 TOPIC_TYPE = Literal["greeting", "bao", "miles", "dc_farm", "federation", "other_forms"]
 METADATA_TYPE = Literal["str", "int"]
 CHAT_MODE_CHAT = "chat"

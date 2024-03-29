@@ -36,34 +36,41 @@ class ChatChains:
         self.retriever = retriever
         self.rerank = rerank
         self.answer = answer
-        self.retriever_chains = (
-            RunnablePassthrough.assign(query_rewrite=self.query_rewrite.chain())
-            | self.retriever.chain()
-            | self.rerank.chain()
-        )
-        self.retriever_chat_chains = (
-            RunnablePassthrough.assign(query_rewrite=self.query_rewrite.chain())
-            | self.retriever.chain()
-            | self.rerank.chain()
-            | self.answer.chain()
-        )
-        self.route_condition = (
-            lambda x: "greeting" == x["topic"].get("type"),
-            {"output_text": self.greeting.chain()},
-        )
 
-    def chat_chain(self) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
-        return RunnablePassthrough.assign(
-            topic=self.intent_classifier.chain(),
-        ) | RunnableBranch(
-            self.route_condition,
-            self.retriever_chat_chains,
-        )
-
-    def retriever_chain(self) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
+    def retriever_chains(self, fallback: bool = False):
         return (
-            RunnablePassthrough.assign(
-                topic=self.intent_classifier.chain(),
-            )
-            | self.retriever_chains
+            RunnablePassthrough.assign(query_rewrite=self.query_rewrite.chain(fallback))
+            | self.retriever.chain()
+            | self.rerank.chain()
         )
+
+    def retriever_chat_chains(self, fallback: bool = False):
+        return (
+            RunnablePassthrough.assign(query_rewrite=self.query_rewrite.chain(fallback))
+            | self.retriever.chain()
+            | self.rerank.chain()
+            | self.answer.chain(fallback)
+        )
+
+    def route_condition(self, fallback):
+        return (
+            lambda x: "greeting" == x["topic"].get("type"),
+            {"output_text": self.greeting.chain(fallback)},
+        )
+
+    def chat_chain(
+        self, fallback: bool = False
+    ) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
+        return RunnablePassthrough.assign(
+            topic=self.intent_classifier.chain(fallback),
+        ) | RunnableBranch(
+            self.route_condition(fallback),
+            self.retriever_chat_chains(fallback),
+        )
+
+    def retriever_chain(
+        self, fallback: bool = False
+    ) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
+        return RunnablePassthrough.assign(
+            topic=self.intent_classifier.chain(fallback),
+        ) | self.retriever_chains(fallback)
