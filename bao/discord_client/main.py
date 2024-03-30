@@ -59,7 +59,7 @@ async def on_message(message: Message) -> None:
     if message.author == client.user:
         return
     if (
-        BOT_ID in [_.id for _ in message.mentions]
+        BOT_ID in [_.id for _ in message.mentions or []]
         or message.channel.type.name == "private"  # type: ignore
     ):
         await reply_message(message)

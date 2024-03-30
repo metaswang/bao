@@ -16,8 +16,12 @@ class Answering:
         self.settings = settings
         self.llms = llms
 
-    def chain(self) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
-        llm = self.llms.get_llm(llm_type=self.settings.chain_templates.answer_model)
+    def chain(
+        self, fallback: bool = False
+    ) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
+        llm = self.llms.get_llm(
+            llm_type=self.settings.chain_templates.answer_model[1 if fallback else 0]
+        )
         chat_template = ChatPromptTemplate.from_messages(
             [
                 ("system", self.settings.chain_templates.answer_template),

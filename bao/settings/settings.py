@@ -2,7 +2,7 @@ from typing import Dict, List, Literal, Union
 
 from pydantic import BaseModel, Field, field_validator
 
-from bao.components import METADATA_TYPE, MODEL_TYPE
+from bao.components import METADATA_TYPE, MODEL_TYPES
 from bao.settings.settings_loader import load_active_settings
 from bao.utils.strings import date_from_yyyy, date_from_yyyymm, date_from_yyyymmdd
 
@@ -310,19 +310,19 @@ class ReRankerSettings(BaseModel):
 
 
 class ChainTemplates(BaseModel):
-    intent_classify_model: MODEL_TYPE = Field(description="intent classificatio model type")  # type: ignore
+    intent_classify_model: MODEL_TYPES = Field(description="intent classification model type from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     intent_classify_template: str = Field(
         description="""Classify the user query if it is greeting-like or else.
                                         If greeting-like, the chain will be routed to greeting chain.
                                         Else the retriever and LLM answer chains will be used."""
     )
-    greeting_model: MODEL_TYPE = Field(description="model type for greeting")  # type: ignore
+    greeting_model: MODEL_TYPES = Field(description="model type for greeting, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     greeting_template: str = Field(description="Greeting-like question answer")
-    answer_model: MODEL_TYPE = Field(description="model type for question answering")  # type: ignore
+    answer_model: MODEL_TYPES = Field(description="model type for question answering, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     answer_template: str = Field(
         description="Using the retriever result as context to call LLM for question answering"
     )
-    query_rewrite_model: MODEL_TYPE = Field(description="model type for query rewrite")  # type: ignore
+    query_rewrite_model: MODEL_TYPES = Field(description="model type for query rewrite, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     query_rewrite_template: str = Field(
         description="prompt template for query rewrite for retriever"
     )

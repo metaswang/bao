@@ -16,9 +16,13 @@ class IntentClassification:
         self.settings = settings
         self.llms = llms
 
-    def chain(self) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
+    def chain(
+        self, fallback: bool = False
+    ) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
         llm = self.llms.get_llm(
-            llm_type=self.settings.chain_templates.intent_classify_model
+            llm_type=self.settings.chain_templates.intent_classify_model[
+                1 if fallback else 0
+            ]
         )
         chat_template = ChatPromptTemplate.from_messages(
             [
