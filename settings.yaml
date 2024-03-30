@@ -112,7 +112,6 @@ discord:
   reply_mode: true
   limit_channel: 
    - 1217304971465326622 # BSB test channel
-   - 1215669554211201104 # DC 爆料ai助理 搜索和问答 channel
   fallback_message: >
    (⊙＿⊙')  Sorry, I couldn't find relevant information to answer your question. If you have any other questions, please feel free to ask.  
    ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌  ✌(-‿-)✌   
@@ -140,7 +139,9 @@ retriever:
 
 
 chain_templates:
-  intent_classify_model: gpt-3.5
+  intent_classify_model: 
+    - anthropic-haiku
+    - gpt-3.5
   # remember to customise below according to the topics existed in your real senarios
   intent_classify_template: >
     Do not answer the question. Instead, you need to follow below steps to generate a JSON object with following fields to classify the question: type: “greeting”, "MY Category", Others" (string) confidence: 0.0 to 1.0 (float)
@@ -153,10 +154,14 @@ chain_templates:
     5.When uncertain or cannot be classified into the above categories, classify as "Others", like：
       def
       efg
-  answer_model: anthropic-sonnet
+  answer_model: 
+    - anthropic-sonnet
+    - gpt-4
   answer_template: >
     ou are an expert in the field of reading analysis and writing. Please answer the question using only the content in the following code block, and be accurate. If you don’t know the answer, please do not reply. \nContext:```{context}```
-  greeting_model: gemini
+  greeting_model: 
+   - gemini
+   - gpt-3.5
   greeting_template: >
     You are the document chatbot Bob. Please answer the user’s questions based on the content in the triple backticks. At the end of the answer, if necessary, you can introduce yourself in detail based on the information in the following triple backticks, and tell the user how to ask questions. Your answer can be in markdown format, and the answer should be comprehensive and clear. If you are not sure, please do not answer.
     ```My name is Bob 
