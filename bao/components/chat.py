@@ -183,25 +183,28 @@ class Chat:
             }
         )
         docs = retriever_res.get("input_documents", [])
-        ref_str = self.gen_source(show_all_source=True, docs=docs)
-        callback_handler = AsyncIteratorCallbackHandler()
-        # Begin a task that runs in the background.
-        task = asyncio.create_task(
-            wrap_done(
-                self.chat_chain.answer.chain().ainvoke(
-                    {
-                        "question": question,
-                        "chat_history": history_msg,
-                        "input_documents": docs,
-                    },
-                    config={"callbacks": [callback_handler]},
+        if docs:
+            ref_str = self.gen_source(show_all_source=True, docs=docs)
+            callback_handler = AsyncIteratorCallbackHandler()
+            # Begin a task that runs in the background.
+            task = asyncio.create_task(
+                wrap_done(
+                    self.chat_chain.answer.chain().ainvoke(
+                        {
+                            "question": question,
+                            "chat_history": history_msg,
+                            "input_documents": docs,
+                        },
+                        config={"callbacks": [callback_handler]},
+                    ),
+                    callback_handler.done,
                 ),
-                callback_handler.done,
-            ),
-        )
-        # callback_handler.aiter
-        async for token in callback_handler.aiter():
-            yield token
+            )
+            # callback_handler.aiter
+            async for token in callback_handler.aiter():
+                yield token
 
-        await task
-        yield ChatResponse(answer="", reference=ref_str).response_text(search=False)
+            await task
+            yield ChatResponse(answer="", reference=ref_str).response_text()
+        else:
+            yield ChatResponse(answer=retriever_res.get("output_text")).response_text()  # type: ignore

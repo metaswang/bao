@@ -52,7 +52,7 @@ class ChatChains:
             | self.answer.chain(fallback)
         )
 
-    def route_condition(self, fallback):
+    def greeting_branch(self, fallback):
         return (
             lambda x: "greeting" == x["topic"].get("type"),
             {"output_text": self.greeting.chain(fallback)},
@@ -64,7 +64,7 @@ class ChatChains:
         return RunnablePassthrough.assign(
             topic=self.intent_classifier.chain(fallback),
         ) | RunnableBranch(
-            self.route_condition(fallback),
+            self.greeting_branch(fallback),
             self.retriever_chat_chains(fallback),
         )
 
@@ -73,4 +73,6 @@ class ChatChains:
     ) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
         return RunnablePassthrough.assign(
             topic=self.intent_classifier.chain(fallback),
-        ) | self.retriever_chains(fallback)
+        ) | RunnableBranch(
+            self.greeting_branch(fallback), self.retriever_chains(fallback)
+        )
