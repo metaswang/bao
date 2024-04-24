@@ -5,6 +5,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from bao.utils.anthropic_with_callbacks import ChatAnthropicWithCallback
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_groq import ChatGroq
 
 
 @singleton
@@ -50,6 +51,12 @@ class LLMs:
             verbose=True,
             streaming=True,
         )
+        self.groq_llama3_8b = ChatGroq(
+            temperature=0, streaming=True, model_name=settings.groq.llama3_8b_8192  # type: ignore
+        )
+        self.groq_llama3_70b = ChatGroq(
+            temperature=0, streaming=True, model_name=settings.groq.llama3_70b_8192  # type: ignore
+        )
 
     def get_llm(self, llm_type: MODEL_TYPE) -> BaseChatModel:  # type: ignore
         if llm_type == "gemini":
@@ -64,5 +71,9 @@ class LLMs:
             return self.anthropic_eco
         elif llm_type == "anthropic-haiku":
             return self.anthropic_haiku
+        elif llm_type == "llama3-8b-8192":
+            return self.groq_llama3_8b
+        elif llm_type == "llama3-70b-8192":
+            return self.groq_llama3_70b
         else:
             raise ValueError(f"Not support model type: {llm_type}")

@@ -46,6 +46,9 @@ local:
   embedding_hf_model_name: intfloat/multilingual-e5-base
   embedding_hf_model_tokens: 512 # for e5 model
 
+groq:
+  api_key: ${GROQ_API_KEY}
+  
 anthropic:
   api_key: ${ANTHROPIC_API_KEY}
   eco_model: claude-3-sonnet-20240229
@@ -60,13 +63,6 @@ openai:
 google_api:
   api_key: ${GOOGLE_API_KEY}
   model: gemini-pro
-
-reranker:
-  enabled: true
-  cohere:
-    api_key: ${COHERE_API_KEY}  
-    k: 4
-    model: rerank-multilingual-v2.0
 
 web_ingest:
   enabled: true
@@ -122,7 +118,7 @@ discord:
    - "喜联盟成立的重要意义是什么？"
 
 retriever:
-  k: 12
+  k: 3
   # collection_name: llm_lessions
   collection_name: bao
   score_threshold: 0.85
@@ -194,3 +190,16 @@ chain_templates:
      When ”郭先生“，”郭文贵“，“郭”，或”Miles“ or ”Miles Guo“,“七哥” appears in the question, You need to use 郭文贵先生 or Miles Guo instead.
      You need to remove any date, year, month, and links from "query". 
     6. Ensemble the above fields into a valid JSON object and then return it.
+  grader_model:
+   - llama3-8b-8192
+   - gpt-3.5
+  grader_template: >
+    You are an AI grader tasked with evaluating the helpfulness of a given document in answering a specific question. Your response should be a JSON object with a single key "score" and a string value ("yes" or "no") indicating whether the document is helpful or not.
+
+    If the provided document contains information that can help answer the question, return the following JSON:
+    {{"score": "yes"}}
+
+    If the document does not contain any information relevant to answering the question, return the following JSON:
+    {{"score": "no"}}
+
+    Only respond with the JSON object, do not include any other text or explanations.    
