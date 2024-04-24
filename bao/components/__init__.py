@@ -8,6 +8,8 @@ MODEL_TYPE = Literal[
     "anthropic-sonnet",
     "anthropic-opus",
     "anthropic-haiku",
+    "llama3-8b-8192",  # Groq
+    "llama3-70b-8192",  # Groq
 ]
 MODEL_TYPES = List[MODEL_TYPE]
 TOPIC_TYPE = Literal["greeting", "bao", "miles", "dc_farm", "federation", "other_forms"]

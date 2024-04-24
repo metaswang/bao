@@ -10,11 +10,11 @@ python-dotenv==1.0.1
 discord.py==2.3.2
 responses==0.18.0
 tqdm
-cohere==4.51
 lru_cache==0.2.3
 transformers==4.36.1
 qdrant-client==1.7.3
 langchain-google-genai>=0.0.9
+langchain-groq>=0.1.2
 pytube==15.0.0
 openai-whisper==20231117
 youtube-transcript-api==0.6.2

@@ -7,10 +7,10 @@ from langchain_core.runnables import (
     RunnableSerializable,
 )
 
+from bao.components.chains.grader_chain import Grader
 from bao.components.chains.intent_classification_chain import IntentClassification
 from bao.components.chains.query_answer_chain import Answering
 from bao.components.chains.query_rewrite_chain import QueryReWrite
-from bao.components.chains.rerank_chain import ReRanker
 from bao.components.chains.retriever_chain import Retriever
 from bao.components.chains.greeting_chain import Greeting
 from bao.settings.settings import Settings
@@ -26,7 +26,7 @@ class ChatChains:
         greeting: Greeting,
         query_rewrite: QueryReWrite,
         retriever: Retriever,
-        rerank: ReRanker,
+        grader: Grader,
         answer: Answering,
     ) -> None:
         self.settings = settings
@@ -34,25 +34,25 @@ class ChatChains:
         self.greeting = greeting
         self.query_rewrite = query_rewrite
         self.retriever = retriever
-        self.rerank = rerank
+        self.grader = grader
         self.answer = answer
 
     def retriever_chains(self, fallback: bool = False):
         return (
             RunnablePassthrough.assign(query_rewrite=self.query_rewrite.chain(fallback))
             | self.retriever.chain()
-            | self.rerank.chain()
+            | self.grader.chain(fallback)
         )
 
     def retriever_chat_chains(self, fallback: bool = False):
         return (
             RunnablePassthrough.assign(query_rewrite=self.query_rewrite.chain(fallback))
             | self.retriever.chain()
-            | self.rerank.chain()
+            | self.grader.chain(fallback)
             | self.answer.chain(fallback)
         )
 
-    def route_condition(self, fallback):
+    def greeting_branch(self, fallback):
         return (
             lambda x: "greeting" == x["topic"].get("type"),
             {"output_text": self.greeting.chain(fallback)},
@@ -64,7 +64,7 @@ class ChatChains:
         return RunnablePassthrough.assign(
             topic=self.intent_classifier.chain(fallback),
         ) | RunnableBranch(
-            self.route_condition(fallback),
+            self.greeting_branch(fallback),
             self.retriever_chat_chains(fallback),
         )
 
@@ -73,4 +73,6 @@ class ChatChains:
     ) -> RunnableSerializable[Dict[str, Any], Dict[str, Any]]:
         return RunnablePassthrough.assign(
             topic=self.intent_classifier.chain(fallback),
-        ) | self.retriever_chains(fallback)
+        ) | RunnableBranch(
+            self.greeting_branch(fallback), self.retriever_chains(fallback)
+        )

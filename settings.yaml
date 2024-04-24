@@ -48,6 +48,9 @@ local:
   embedding_hf_model_name: intfloat/multilingual-e5-base
   embedding_hf_model_tokens: 512 # for e5 model
 
+groq:
+  api_key: ${GROQ_API_KEY}
+  
 anthropic:
   api_key: ${ANTHROPIC_API_KEY}
   eco_model: claude-3-sonnet-20240229
@@ -63,13 +66,6 @@ google_api:
   api_key: ${GOOGLE_API_KEY}
   model: gemini-pro
 
-reranker:
-  enabled: true
-  cohere:
-    api_key: ${COHERE_API_KEY}  
-    k: 4
-    model: rerank-multilingual-v2.0
-    
 web_ingest:
   enabled: true
   path: "/ingest"
@@ -123,7 +119,8 @@ discord:
    - "Question 3?"
 
 retriever:
-  k: 10
+  k: 3
+  # collection_name: llm_lessions
   collection_name: bao
   score_threshold: 0.85
   metadata:

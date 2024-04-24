@@ -89,6 +89,12 @@ class AnthropicSettings(BaseModel):
     haiku_model: str = Field("claude-3-haiku-20240229", description="Haiku model name")
 
 
+class GroqSettings(BaseModel):
+    api_key: str = Field(description="Anthropic API key")
+    llama3_8b_8192: str | None = Field("llama3-8b-8192", description="llama3-8b")
+    llama3_70b_8192: str | None = Field("llama3-70b-8192", description="llama3-70b")
+
+
 class OpenAISettings(BaseModel):
     api_base: str = Field(
         None,
@@ -162,12 +168,6 @@ class QdrantSettings(BaseModel):
             "Only use this if you can guarantee that you can resolve the thread safety outside QdrantClient."
         ),
     )
-
-
-class CohereSettings(BaseModel):
-    api_key: str
-    model: str = Field(description="reranking model id")
-    k: int = Field(4, description="get the top k after reranked")
 
 
 class IngestUISettings(BaseModel):
@@ -304,11 +304,6 @@ class RetrieverSettings(BaseModel):
     collection_name: str = Field(description="collection name of vector db")
 
 
-class ReRankerSettings(BaseModel):
-    enabled: bool = Field(True, description="Enabled when True else disabled")
-    cohere: CohereSettings
-
-
 class ChainTemplates(BaseModel):
     intent_classify_model: MODEL_TYPES = Field(description="intent classification model type from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     intent_classify_template: str = Field(
@@ -325,6 +320,10 @@ class ChainTemplates(BaseModel):
     query_rewrite_model: MODEL_TYPES = Field(description="model type for query rewrite, from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     query_rewrite_template: str = Field(
         description="prompt template for query rewrite for retriever"
+    )
+    grader_model: MODEL_TYPES = Field(description="grader models")
+    grader_template: str = Field(
+        description="grader template for question <-> document. return {'score': 'yes' or 'no'}"
     )
 
 
@@ -406,6 +405,7 @@ class Settings(BaseModel):
     local: LocalSettings
     openai: OpenAISettings
     anthropic: AnthropicSettings
+    groq: GroqSettings
     vectorstore: VectorstoreSettings
     qdrant: QdrantSettings
     google_api: GoogleSettings
@@ -413,7 +413,6 @@ class Settings(BaseModel):
     web_chat: WebUISettings
     web_ingest: IngestUISettings
     retriever: RetrieverSettings
-    reranker: ReRankerSettings
     chain_templates: ChainTemplates
     injest: InjestSettings
     server: ServerSettings
