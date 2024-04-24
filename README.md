@@ -14,7 +14,7 @@ BobGPT is an AI project that allows you to ask questions about youtube videos.
 1. In the pipeline, a input question will be routed to the proper branch, greeting-like or query & answer(QA). 
 2. When comes to QA, the LLM will do query analysis: extracted attributes as filters and the question will be optimised and rewriten for better vector retrieving in the vector DB. 
 3. The filter conditions and optimised question will be passed to the retriever chain and get some top-k candidates for grading.
-4. The grader chain will take the question and recalled documents as input to get the final relative documents
+4. The grader chain will take the question and documents as the grader input and output the final relative documents
 5. The LLM will do the summarisation based on the reraking output and provide the answer and attach the sources to the user.
 # Install & Run
 Before running below cmd, make sure you have figured out the settings in settings.yaml based on your real scenarios.
