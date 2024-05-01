@@ -54,7 +54,7 @@ class Grader:
                 ]
                 return {
                     "input_documents": [docs[_] for _ in doc_idx_relevant][
-                        : self.settings.groq.k
+                        : self.settings.grader.k
                     ]
                 }
 

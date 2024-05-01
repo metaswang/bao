@@ -93,7 +93,6 @@ class GroqSettings(BaseModel):
     api_key: str = Field(description="Anthropic API key")
     llama3_8b_8192: str | None = Field("llama3-8b-8192", description="llama3-8b")
     llama3_70b_8192: str | None = Field("llama3-70b-8192", description="llama3-70b")
-    k: int | None = Field(4, description="number of keepings")
 
 
 class OpenAISettings(BaseModel):
@@ -305,6 +304,10 @@ class RetrieverSettings(BaseModel):
     collection_name: str = Field(description="collection name of vector db")
 
 
+class GraderSettings(BaseModel):
+    k: int | None = Field(4, description="number of keepings")
+
+
 class ChainTemplates(BaseModel):
     intent_classify_model: MODEL_TYPES = Field(description="intent classification model type from 1. gemini 2. gpt-3.5 3. gpt-4")  # type: ignore
     intent_classify_template: str = Field(
@@ -414,6 +417,7 @@ class Settings(BaseModel):
     web_chat: WebUISettings
     web_ingest: IngestUISettings
     retriever: RetrieverSettings
+    grader: GraderSettings
     chain_templates: ChainTemplates
     injest: InjestSettings
     server: ServerSettings
