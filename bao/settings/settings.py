@@ -93,6 +93,7 @@ class GroqSettings(BaseModel):
     api_key: str = Field(description="Anthropic API key")
     llama3_8b_8192: str | None = Field("llama3-8b-8192", description="llama3-8b")
     llama3_70b_8192: str | None = Field("llama3-70b-8192", description="llama3-70b")
+    k: int | None = Field(4, description="number of keepings")
 
 
 class OpenAISettings(BaseModel):

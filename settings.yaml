@@ -50,6 +50,7 @@ local:
 
 groq:
   api_key: ${GROQ_API_KEY}
+  k: 4
   
 anthropic:
   api_key: ${ANTHROPIC_API_KEY}
@@ -119,7 +120,7 @@ discord:
    - "Question 3?"
 
 retriever:
-  k: 3
+  k: 6
   # collection_name: llm_lessions
   collection_name: bao
   score_threshold: 0.85

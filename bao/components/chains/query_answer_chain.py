@@ -30,5 +30,5 @@ class Answering:
             ]
         )
         return load_qa_chain(
-            llm=llm, chain_type="stuff", verbose=True, prompt=chat_template
+            llm=llm, chain_type="stuff", verbose=True, prompt=chat_template  # type: ignore
         )
