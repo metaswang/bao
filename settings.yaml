@@ -48,7 +48,6 @@ local:
 
 groq:
   api_key: ${GROQ_API_KEY}
-  k: 4
   
 anthropic:
   api_key: ${ANTHROPIC_API_KEY}
@@ -134,6 +133,8 @@ retriever:
     topic: str
     chunk_no: int
 
+grader:
+  k: 3
 
 chain_templates:
   intent_classify_model: 
