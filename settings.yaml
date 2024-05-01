@@ -48,6 +48,7 @@ local:
 
 groq:
   api_key: ${GROQ_API_KEY}
+  k: 4
   
 anthropic:
   api_key: ${ANTHROPIC_API_KEY}
@@ -118,7 +119,7 @@ discord:
    - "喜联盟成立的重要意义是什么？"
 
 retriever:
-  k: 3
+  k: 6
   # collection_name: llm_lessions
   collection_name: bao
   score_threshold: 0.85

@@ -45,16 +45,18 @@ class Grader:
                 return {"input_documents": []}
             q_docs = [{"question": question, "document": _.page_content} for _ in docs]
             chain = chat_template | llm | JsonOutputParser()
-            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-                futures = [executor.submit(chain.invoke, q_doc) for q_doc in q_docs]
-                results = [
-                    future.result()
-                    for future in concurrent.futures.as_completed(futures)
-                ]
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=len(q_docs)
+            ) as executor:
+                results = list(executor.map(chain.invoke, q_docs))
                 doc_idx_relevant = [
                     i for i, res in enumerate(results) if res["score"] == "yes"
                 ]
-                return {"input_documents": [docs[_] for _ in doc_idx_relevant]}
+                return {
+                    "input_documents": [docs[_] for _ in doc_idx_relevant][
+                        : self.settings.groq.k
+                    ]
+                }
 
         return TransformChain(
             transform=grader,

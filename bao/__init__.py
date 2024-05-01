@@ -5,7 +5,9 @@ import logging
 LOG_LEVEL = "INFO"
 
 PRETTY_LOG_FORMAT = "%(asctime)s.%(msecs)03d [%(levelname)s] %(name)+15s - %(message)s"
-logging.basicConfig(level=LOG_LEVEL, format=PRETTY_LOG_FORMAT, datefmt="%H:%M:%S")
+logging.basicConfig(
+    level=LOG_LEVEL, format=PRETTY_LOG_FORMAT, datefmt="%Y-%m-%d %H:%M:%S"
+)
 logging.captureWarnings(True)
 
 # disable gradio analytics
