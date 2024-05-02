@@ -95,10 +95,13 @@ class ChatUI:
                     mode = gr.Radio(
                         DEFAULT_CHAT_MODE,  # type: ignore
                         label=self.settings.web_chat.work_mode_label,
-                        value=DEFAULT_CHAT_MODE_SEARCH,
+                        value=DEFAULT_CHAT_MODE_ASK,
                     )
                     search_k = gr.Dropdown(
-                        label="Top-K", choices=list(range(1, 16)), value=5
+                        label="Top-K",
+                        choices=list(range(1, 16)),
+                        value=5,
+                        visible=False,
                     )
                     mode.change(
                         fn=self._chat_mode_changed,
