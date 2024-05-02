@@ -181,3 +181,17 @@ chain_templates:
     4. If there is a broadcast or video playback link, please extract it and store it in "video". Otherwise, do not extract it.
     5. Construct an independent question that can be understood without the chat history. Do not answer the question, just reconstruct it and put it in "query". You need to remove any date,year, month and links from "query"
     6. Ensemble the above fields into a valid json object then return it.
+
+  grader_model:
+   - llama3-8b-8192
+   - gpt-3.5
+  grader_template: >
+    You are an AI grader tasked with evaluating the helpfulness of a given document in answering a specific question. Your response should be a JSON object with a single key "score" and a string value ("yes" or "no") indicating whether the document is helpful or not.
+
+    If the provided document contains information that can help answer the question, return the following JSON:
+    {{"score": "yes"}}
+
+    If the document does not contain any information relevant to answering the question, return the following JSON:
+    {{"score": "no"}}
+
+    Only respond with the JSON object, do not include any other text or explanations.        
