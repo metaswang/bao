@@ -8,7 +8,6 @@ from bao.components.llms import LLMs
 from bao.settings.settings import Settings
 from langchain_core.output_parsers.json import JsonOutputParser
 from langchain.chains.transform import TransformChain
-import concurrent.futures
 
 
 @singleton
@@ -45,18 +44,15 @@ class Grader:
                 return {"input_documents": []}
             q_docs = [{"question": question, "document": _.page_content} for _ in docs]
             chain = chat_template | llm | JsonOutputParser()
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=len(q_docs)
-            ) as executor:
-                results = list(executor.map(chain.invoke, q_docs))
-                doc_idx_relevant = [
-                    i for i, res in enumerate(results) if res["score"] == "yes"
+            results = chain.batch(q_docs, {"max_concurrency": len(q_docs)})
+            doc_idx_relevant = [
+                i for i, res in enumerate(results) if res["score"] == "yes"
+            ]
+            return {
+                "input_documents": [docs[_] for _ in doc_idx_relevant][
+                    : self.settings.grader.k
                 ]
-                return {
-                    "input_documents": [docs[_] for _ in doc_idx_relevant][
-                        : self.settings.grader.k
-                    ]
-                }
+            }
 
         return TransformChain(
             transform=grader,
