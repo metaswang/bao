@@ -150,7 +150,7 @@ class Chat:
                     docs=answer.get("input_documents", []),
                 ),
             )
-        answer_txt = answer.get("output_text") if not search else ""
+        answer_txt = answer.get("output_text", "") if not search else ""
         logger.info(f"from Bot: {answer_txt}")
 
         return ChatResponse(
@@ -207,4 +207,4 @@ class Chat:
             await task
             yield ChatResponse(answer="", reference=ref_str).response_text()
         else:
-            yield ChatResponse(answer=retriever_res.get("output_text")).response_text()  # type: ignore
+            yield ChatResponse(answer=retriever_res.get("output_text", "")).response_text()  # type: ignore
